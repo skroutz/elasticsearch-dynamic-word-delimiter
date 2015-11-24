@@ -15,7 +15,7 @@
  * limitations under the License.
  */
  
-package org.apache.lucene.analysis.miscellaneous;
+package org.skroutz.elasticsearch.index.analysis;
 
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
@@ -31,6 +31,7 @@ import org.apache.lucene.util.AttributeSource;
 import org.apache.lucene.util.InPlaceMergeSorter;
 import org.apache.lucene.util.RamUsageEstimator;
 import org.apache.lucene.util.Version;
+import org.skroutz.elasticsearch.action.support.WordDelimiterActionListener;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -264,7 +265,8 @@ public final class WordDelimiterFilter extends TokenFilter {
 
         // word of no delimiters, or protected word: just return it
         if ((iterator.current == 0 && iterator.end == termLength) ||
-            (protWords != null && protWords.contains(termBuffer, 0, termLength))) {
+            (protWords != null && protWords.contains(termBuffer, 0, termLength)) ||
+			WordDelimiterActionListener.protectedWords.contains(termAttribute.toString())) {
           posIncAttribute.setPositionIncrement(accumPosInc);
           accumPosInc = 0;
           first = false;

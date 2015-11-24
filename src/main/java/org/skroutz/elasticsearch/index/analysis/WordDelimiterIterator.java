@@ -1,4 +1,4 @@
-package org.apache.lucene.analysis.miscellaneous;
+package org.skroutz.elasticsearch.index.analysis;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -17,7 +17,7 @@ package org.apache.lucene.analysis.miscellaneous;
  * limitations under the License.
  */
 
-import static org.apache.lucene.analysis.miscellaneous.WordDelimiterFilter.*;
+import static org.skroutz.elasticsearch.index.analysis.WordDelimiterFilter.*;
 
 /**
  * A BreakIterator-like API for iterating over subwords in text, according to WordDelimiterFilter rules.

@@ -17,12 +17,9 @@
  * under the License.
  */
 
-package org.elasticsearch.index.analysis;
+package org.skroutz.elasticsearch.index.analysis;
 
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.miscellaneous.Lucene47WordDelimiterFilter;
-import org.apache.lucene.analysis.miscellaneous.WordDelimiterFilter;
-import org.apache.lucene.analysis.miscellaneous.WordDelimiterIterator;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.util.Version;
 import org.elasticsearch.common.inject.Inject;
@@ -32,12 +29,14 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.settings.IndexSettings;
+import org.elasticsearch.index.analysis.Analysis;
+import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.apache.lucene.analysis.miscellaneous.WordDelimiterFilter.*;
+import static org.skroutz.elasticsearch.index.analysis.WordDelimiterFilter.*;
 
 public class WordDelimiterTokenFilterFactory extends AbstractTokenFilterFactory {
 
@@ -88,17 +87,10 @@ public class WordDelimiterTokenFilterFactory extends AbstractTokenFilterFactory 
 
     @Override
     public TokenStream create(TokenStream tokenStream) {
-         if (version.onOrAfter(Version.LUCENE_4_8)) {
-             return new WordDelimiterFilter(version, tokenStream,
-                     charTypeTable,
-                     flags,
-                     protoWords);
-         } else {
-             return new Lucene47WordDelimiterFilter(tokenStream,
-                     charTypeTable,
-                     flags,
-                     protoWords);
-         }
+		return new WordDelimiterFilter(version, tokenStream,
+				charTypeTable,
+				flags,
+				protoWords);
     }
 
     public int getFlag(int flag, Settings settings, String key, boolean defaultValue) {
