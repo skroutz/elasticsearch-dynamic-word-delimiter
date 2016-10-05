@@ -86,7 +86,7 @@ public class WordDelimiterTokenFilterFactory extends AbstractTokenFilterFactory 
 
     @Override
     public TokenStream create(TokenStream tokenStream) {
-		return new WordDelimiterFilter(version, tokenStream,
+		return new WordDelimiterFilter(tokenStream,
 				charTypeTable,
 				flags,
 				protoWords);
