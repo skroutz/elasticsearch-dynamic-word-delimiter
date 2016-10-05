@@ -35,6 +35,7 @@ import org.skroutz.elasticsearch.action.support.WordDelimiterActionListener;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Set;
 
 /**
  * Splits words into subwords and performs optional transformations on subword
@@ -262,11 +263,12 @@ public final class WordDelimiterFilter extends TokenFilter {
 
         iterator.setText(termBuffer, termLength);
         iterator.next();
+        Set<String> protectedWords = WordDelimiterActionListener.protectedWords();
 
         // word of no delimiters, or protected word: just return it
         if ((iterator.current == 0 && iterator.end == termLength) ||
             (protWords != null && protWords.contains(termBuffer, 0, termLength)) ||
-			WordDelimiterActionListener.protectedWords().contains(termAttribute.toString())) {
+			protectedWords.contains(termAttribute.toString())) {
           posIncAttribute.setPositionIncrement(accumPosInc);
           accumPosInc = 0;
           first = false;
