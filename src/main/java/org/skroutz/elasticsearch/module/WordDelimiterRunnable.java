@@ -29,12 +29,17 @@ public class WordDelimiterRunnable extends AbstractRunnable {
 	}
 
     public void doRun() throws Exception {
-		while (true) {
-			Thread.sleep(interval);
-			SearchRequest searchRequest = new SearchRequest(index);
-			searchRequest.listenerThreaded(false);
-			client.search(searchRequest, new WordDelimiterActionListener());
-		}
+    	SearchRequest searchRequest = new SearchRequest(index).types(type);
+    	searchRequest.listenerThreaded(false);
+    	
+    	while (true) {
+    		try {
+				Thread.sleep(interval);
+			} catch (InterruptedException e) {
+				logger.error(e.getMessage());
+			}
+    		client.search(searchRequest, new WordDelimiterActionListener());
+    	}
 	}
 
     public void onFailure(Throwable t) {
