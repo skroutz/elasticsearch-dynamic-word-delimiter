@@ -10,7 +10,13 @@ import java.util.Collection;
 import static org.elasticsearch.common.collect.Lists.newArrayList;
 
 public class WordDelimiterPlugin extends AbstractPlugin {
-
+	@SuppressWarnings("rawtypes")
+	private final Collection<Class<? extends LifecycleComponent>> services = newArrayList();
+	
+	public WordDelimiterPlugin() {
+		services.add(WordDelimiterService.class);
+	}
+	
     public String name() {
         return "skroutz-word-delimiter";
     }
@@ -23,10 +29,9 @@ public class WordDelimiterPlugin extends AbstractPlugin {
 		module.addProcessor(new WordDelimiterBinderProcessor());
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Collection<Class<? extends LifecycleComponent>> services() {
-		Collection<Class<? extends LifecycleComponent>> services = newArrayList();
-		services.add(WordDelimiterService.class);
 		return services;
 	}
 }
