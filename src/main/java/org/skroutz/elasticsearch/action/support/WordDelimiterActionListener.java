@@ -12,13 +12,13 @@ public class WordDelimiterActionListener implements ActionListener<SearchRespons
 
 	@Override
 	public final void onResponse(SearchResponse response) {
-		Object obj;
+		SearchHit[] hits = response.getHits().hits();
 		Set<String> localProtectedWords = new HashSet<String>();
 
-		for (SearchHit hit : response.getHits().hits()) {
-			obj = hit.getSource().get("word");
-			if (obj instanceof String)
-				localProtectedWords.add(obj.toString());
+		String word;
+		for (SearchHit hit : hits) {
+			word = hit.getSource().get("word").toString();
+			localProtectedWords.add(word);
 		}
 
 		protectedWords = localProtectedWords;
