@@ -80,7 +80,7 @@ public class WordDelimiterTokenFilterFactory extends AbstractTokenFilterFactory 
         flags |= getFlag(STEM_ENGLISH_POSSESSIVE, settings, "stem_english_possessive", true);
         // If not null is the set of tokens to protect from being delimited
         Set<?> protectedWords = Analysis.getWordSet(env, settings, "protected_words", version);
-        this.protoWords = protectedWords == null ? null : CharArraySet.copy(Lucene.VERSION, protectedWords);
+        this.protoWords = protectedWords == null ? null : CharArraySet.copy(protectedWords);
         this.flags = flags;
     }
 
