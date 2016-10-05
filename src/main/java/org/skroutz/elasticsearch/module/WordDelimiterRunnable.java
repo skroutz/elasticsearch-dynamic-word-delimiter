@@ -28,7 +28,11 @@ public class WordDelimiterRunnable extends AbstractRunnable {
 		this.interval = settings.getAsTime("plugin.skroutz_word_delimiter.refresh_interval", REFRESH_INTERVAL).getMillis();
 	}
 
-    public void doRun() throws Exception {
+    public void onFailure(Throwable t) {
+		logger.error(t.getMessage());
+	}
+    
+    protected void doRun() throws Exception {
     	SearchRequest searchRequest = new SearchRequest(index).types(type);
     	searchRequest.listenerThreaded(false);
     	
@@ -40,9 +44,5 @@ public class WordDelimiterRunnable extends AbstractRunnable {
 			}
     		client.search(searchRequest, new WordDelimiterActionListener());
     	}
-	}
-
-    public void onFailure(Throwable t) {
-		logger.error(t.getMessage());
 	}
 }
