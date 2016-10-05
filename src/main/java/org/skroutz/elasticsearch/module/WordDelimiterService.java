@@ -7,20 +7,17 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.ElasticsearchException;
 
 public class WordDelimiterService extends AbstractLifecycleComponent<WordDelimiterService> {
-
-	private final Client client;
-	private final Settings settings;
+	private final Thread syncWordsThread;
 
 	@Inject
     public WordDelimiterService(Settings settings, Client client) {
         super(settings);
-		this.client = client;
-		this.settings = settings;
+		syncWordsThread = new Thread(new WordDelimiterRunnable(client, settings));
     }
 
 	@Override
     protected void doStart() throws ElasticsearchException {
-		new Thread(new WordDelimiterRunnable(client, settings)).start();
+		syncWordsThread.start();
 	}
 
 	@Override
