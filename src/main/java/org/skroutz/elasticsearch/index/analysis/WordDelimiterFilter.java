@@ -266,7 +266,7 @@ public final class WordDelimiterFilter extends TokenFilter {
         // word of no delimiters, or protected word: just return it
         if ((iterator.current == 0 && iterator.end == termLength) ||
             (protWords != null && protWords.contains(termBuffer, 0, termLength)) ||
-			WordDelimiterActionListener.protectedWords.contains(termAttribute.toString())) {
+			WordDelimiterActionListener.protectedWords().contains(termAttribute.toString())) {
           posIncAttribute.setPositionIncrement(accumPosInc);
           accumPosInc = 0;
           first = false;
