@@ -1,13 +1,12 @@
 package org.skroutz.elasticsearch.module;
 
 import org.elasticsearch.common.component.AbstractLifecycleComponent;
-import org.elasticsearch.common.component.LifecycleComponent;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.ElasticsearchException;
 
-public class WordDelimiterService extends AbstractLifecycleComponent<WordDelimiterService> implements LifecycleComponent<WordDelimiterService> {
+public class WordDelimiterService extends AbstractLifecycleComponent<WordDelimiterService> {
 
 	private final Client client;
 	private final Settings settings;
