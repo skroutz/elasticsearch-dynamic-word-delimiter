@@ -9,8 +9,6 @@ import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.action.search.SearchRequest;
 import org.skroutz.elasticsearch.action.support.WordDelimiterActionListener;
 
-import java.util.concurrent.TimeUnit;
-
 public class WordDelimiterRunnable extends AbstractRunnable {
 
 	private final Client client;
