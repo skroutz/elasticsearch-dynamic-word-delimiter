@@ -19,6 +19,11 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <elasticsearch.version>1.5.2</elasticsearch.version>
+    </properties>
 
 	<developers>
 		<developer>
@@ -44,12 +49,6 @@
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
     </distributionManagement>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.compile.version>1.7</java.compile.version>
-        <elasticsearch.version>1.5.2</elasticsearch.version>
-    </properties>
 
     <dependencies>
         <dependency>
