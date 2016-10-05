@@ -15,16 +15,11 @@ public class WordDelimiterService extends AbstractLifecycleComponent<WordDelimit
 		syncWordsThread = new Thread(new WordDelimiterRunnable(client, settings));
     }
 
-	@Override
-    protected void doStart() throws ElasticsearchException {
+	protected void doStart() throws ElasticsearchException {
 		syncWordsThread.start();
 	}
 
-	@Override
-	protected void doStop() throws ElasticsearchException {
-	}
+	protected void doStop() throws ElasticsearchException {}
 
-	@Override
-	protected void doClose() throws ElasticsearchException {
-	}
+	protected void doClose() throws ElasticsearchException {}
 }
