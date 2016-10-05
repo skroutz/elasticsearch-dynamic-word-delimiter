@@ -3,12 +3,15 @@ package org.skroutz.elasticsearch.action.support;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.common.logging.ESLogger;
+import org.elasticsearch.common.logging.ESLoggerFactory;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class WordDelimiterActionListener implements ActionListener<SearchResponse> {
 	private static Set<String> protectedWords = new HashSet<String>();
+	private final ESLogger logger = ESLoggerFactory.getLogger(WordDelimiterActionListener.class.getSimpleName());
 
 	public void onResponse(SearchResponse response) {
 		SearchHit[] hits = response.getHits().hits();
@@ -24,7 +27,7 @@ public class WordDelimiterActionListener implements ActionListener<SearchRespons
 	}
 
 	public void onFailure(Throwable e) {
-		protectedWords = new HashSet<String>();
+		logger.error(e.getMessage());
 	}
 	
 	public static Set<String> protectedWords() {
