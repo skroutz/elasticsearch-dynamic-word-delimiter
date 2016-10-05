@@ -10,8 +10,7 @@ import java.util.Set;
 public class WordDelimiterActionListener implements ActionListener<SearchResponse> {
 	private static Set<String> protectedWords = new HashSet<String>();
 
-	@Override
-	public final void onResponse(SearchResponse response) {
+	public void onResponse(SearchResponse response) {
 		SearchHit[] hits = response.getHits().hits();
 		Set<String> localProtectedWords = new HashSet<String>();
 
@@ -24,8 +23,7 @@ public class WordDelimiterActionListener implements ActionListener<SearchRespons
 		protectedWords = localProtectedWords;
 	}
 
-	@Override
-	public final void onFailure(Throwable e) {
+	public void onFailure(Throwable e) {
 		protectedWords = new HashSet<String>();
 	}
 	
