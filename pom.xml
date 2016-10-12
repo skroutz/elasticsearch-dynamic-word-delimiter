@@ -1,30 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <name>elasticsearch-skroutz-word-delimiter</name>
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>gr.skroutz</groupId>
-    <artifactId>elasticsearch-skroutz-word-delimiter</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <description>Custom word delimiter for ElasticSearch</description>
-    <packaging>jar</packaging>
-    <inceptionYear>2015</inceptionYear>
+	<name>elasticsearch-skroutz-word-delimiter</name>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>gr.skroutz</groupId>
+	<artifactId>elasticsearch-skroutz-word-delimiter</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<description>Custom word delimiter for ElasticSearch</description>
+	<packaging>jar</packaging>
+	<inceptionYear>2015</inceptionYear>
 
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <elasticsearch.version>1.5.2</elasticsearch.version>
-        <lucene.version>4.10.4</lucene.version>
-    </properties>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<elasticsearch.version>1.5.2</elasticsearch.version>
+		<lucene.version>4.10.4</lucene.version>
+	</properties>
 
 	<developers>
 		<developer>
@@ -38,97 +37,97 @@
 			</roles>
 		</developer>
 	</developers>
-    <scm>
-        <connection>scm:git:git@github.com:skroutz/elasticsearch-skroutz-word-delimiter.git</connection>
-        <developerConnection>scm:git:git@github.com:skroutz/elasticsearch-skroutz-word-delimiter.git</developerConnection>
-        <url>http://github.com/skroutz/elasticsearch-skroutz-word-delimiter</url>
-    </scm>
+	<scm>
+		<connection>scm:git:git@github.com:skroutz/elasticsearch-skroutz-word-delimiter.git</connection>
+		<developerConnection>scm:git:git@github.com:skroutz/elasticsearch-skroutz-word-delimiter.git</developerConnection>
+		<url>http://github.com/skroutz/elasticsearch-skroutz-word-delimiter</url>
+	</scm>
 
-    <distributionManagement>
-        <repository>
-            <id>ossrh</id>
+	<distributionManagement>
+		<repository>
+			<id>ossrh</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </repository>
-    </distributionManagement>
-    
-    <parent>
+		</repository>
+	</distributionManagement>
+
+	<parent>
 		<artifactId>oss-parent</artifactId>
 		<groupId>org.sonatype.oss</groupId>
 		<version>7</version>
 	</parent>
 
-    <dependencies>
-    	<dependency>
+	<dependencies>
+		<dependency>
 			<groupId>com.carrotsearch.randomizedtesting</groupId>
 			<artifactId>randomizedtesting-runner</artifactId>
 			<version>2.1.11</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-test-framework</artifactId>
 			<version>${lucene.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-		
-        <dependency>
-            <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch</artifactId>
-            <version>${elasticsearch.version}</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-        
-        <dependency>
+
+		<dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<version>${elasticsearch.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
 			<version>${elasticsearch.version}</version>
 			<scope>test</scope>
 			<type>test-jar</type>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-all</artifactId>
 			<version>1.3</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.16</version>
 			<scope>runtime</scope>
 		</dependency>
-    </dependencies>
+	</dependencies>
 
-    <build>
-        <resources>
-            <resource>
-                <directory>${basedir}/src/main/resources</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>es-plugin.properties</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>${basedir}/src/main/resources</directory>
-                <filtering>false</filtering>
-                <excludes>
-                    <exclude>es-plugin.properties</exclude>
-                </excludes>
-            </resource>
-        </resources>
-        <plugins>
-            <plugin>
+	<build>
+		<resources>
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>es-plugin.properties</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+				<filtering>false</filtering>
+				<excludes>
+					<exclude>es-plugin.properties</exclude>
+				</excludes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
 				<version>1.3.1</version>
@@ -148,7 +147,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -158,7 +157,7 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -172,7 +171,7 @@
 					<argLine>-Xmx1024m</argLine>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
@@ -186,7 +185,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.3</version>
@@ -206,7 +205,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
@@ -223,10 +222,10 @@
 					<autoReleaseAfterClose>true</autoReleaseAfterClose>
 				</configuration>
 			</plugin>
-        </plugins>
-    </build>
-    
-    <profiles>
+		</plugins>
+	</build>
+
+	<profiles>
 		<profile>
 			<id>release-sign-artifacts</id>
 			<activation>
