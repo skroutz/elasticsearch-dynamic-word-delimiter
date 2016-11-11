@@ -15,11 +15,11 @@ public class WordDelimiterRunnable extends AbstractRunnable {
 	public static final String INDEX_NAME = "protected_words";
 	public static final String INDEX_TYPE = "word";
 
+	private volatile boolean running;
 	private final Client client;
 	private final String index;
 	private final long interval;
 	private final String type;
-	private final WordDelimiterActionListener listener = WordDelimiterActionListener.getInstance();
 	private final ESLogger logger = ESLoggerFactory.getLogger(WordDelimiterRunnable.class.getSimpleName());
 
 	public WordDelimiterRunnable(Client client, Settings settings) {
@@ -28,22 +28,29 @@ public class WordDelimiterRunnable extends AbstractRunnable {
 		this.type = settings.get("plugin.skroutz_word_delimiter.protected_words_type", INDEX_TYPE);
 		this.interval = settings.getAsTime("plugin.skroutz_word_delimiter.refresh_interval", REFRESH_INTERVAL).getMillis();
 	}
+	
+	public void stopRunning() {
+		running = false;
+	}
 
     public void onFailure(Throwable t) {
 		logger.error(t.getMessage());
 	}
     
-    protected void doRun() throws Exception {
+    protected void doRun() {
+    	running = true;
+    	WordDelimiterActionListener listener = WordDelimiterActionListener.getInstance();
     	SearchRequest searchRequest = new SearchRequest(index).types(type);
     	searchRequest.listenerThreaded(false);
     	
-    	while (true) {
+    	while (running) {
+    		client.search(searchRequest, listener);
+    		
     		try {
 				Thread.sleep(interval);
 			} catch (InterruptedException e) {
 				logger.error(e.getMessage());
 			}
-    		client.search(searchRequest, listener);
     	}
 	}
 }

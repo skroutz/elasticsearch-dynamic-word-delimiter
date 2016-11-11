@@ -7,6 +7,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.ElasticsearchException;
 
 public class WordDelimiterService extends AbstractLifecycleComponent<WordDelimiterService> {
+	public static final int WAIT_INTERVAL = 100;
 	private final Thread syncWordsThread;
 	private final WordDelimiterRunnable runnable;
 
@@ -21,7 +22,16 @@ public class WordDelimiterService extends AbstractLifecycleComponent<WordDelimit
 		syncWordsThread.start();
 	}
 
-	protected void doStop() throws ElasticsearchException {}
+	protected void doStop() throws ElasticsearchException {
+		runnable.stopRunning();
+		syncWordsThread.interrupt();
+		
+		try {
+			syncWordsThread.join(WAIT_INTERVAL);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
 	protected void doClose() throws ElasticsearchException {}
 }
