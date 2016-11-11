@@ -19,6 +19,7 @@ public class WordDelimiterRunnable extends AbstractRunnable {
 	private final String index;
 	private final long interval;
 	private final String type;
+	private final WordDelimiterActionListener listener = WordDelimiterActionListener.getInstance();
 	private final ESLogger logger = ESLoggerFactory.getLogger(WordDelimiterRunnable.class.getSimpleName());
 
 	public WordDelimiterRunnable(Client client, Settings settings) {
@@ -42,7 +43,7 @@ public class WordDelimiterRunnable extends AbstractRunnable {
 			} catch (InterruptedException e) {
 				logger.error(e.getMessage());
 			}
-    		client.search(searchRequest, new WordDelimiterActionListener());
+    		client.search(searchRequest, listener);
     	}
 	}
 }

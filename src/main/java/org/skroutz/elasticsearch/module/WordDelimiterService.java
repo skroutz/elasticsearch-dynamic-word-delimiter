@@ -8,11 +8,13 @@ import org.elasticsearch.ElasticsearchException;
 
 public class WordDelimiterService extends AbstractLifecycleComponent<WordDelimiterService> {
 	private final Thread syncWordsThread;
+	private final WordDelimiterRunnable runnable;
 
 	@Inject
     public WordDelimiterService(Settings settings, Client client) {
         super(settings);
-		syncWordsThread = new Thread(new WordDelimiterRunnable(client, settings));
+        runnable = new WordDelimiterRunnable(client, settings);
+		syncWordsThread = new Thread(runnable);
     }
 
 	protected void doStart() throws ElasticsearchException {

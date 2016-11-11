@@ -23,6 +23,7 @@ import java.util.Set;
 
 @ThreadLeakScope(Scope.NONE)
 public class ProtectedWordsIndexTests extends ElasticsearchIntegrationTest {
+	private final WordDelimiterActionListener wordsListener = WordDelimiterActionListener.getInstance();
 
     @Override
     protected Settings nodeSettings(int nodeOrdinal) {
@@ -47,7 +48,7 @@ public class ProtectedWordsIndexTests extends ElasticsearchIntegrationTest {
 
         Thread.sleep(TimeValue.timeValueSeconds(2).getMillis());
 
-        Set<String> protectedWords = WordDelimiterActionListener.protectedWords();
+        Set<String> protectedWords = wordsListener.getProtectedWords();
         assertTrue(protectedWords.size() == 1);
 
         String source = "skliros 1tb";
@@ -71,7 +72,7 @@ public class ProtectedWordsIndexTests extends ElasticsearchIntegrationTest {
 
         Thread.sleep(TimeValue.timeValueSeconds(2).getMillis());
 
-        Set<String> protectedWords = WordDelimiterActionListener.protectedWords();
+        Set<String> protectedWords = wordsListener.getProtectedWords();
         assertTrue(protectedWords.size() == 1);
 
         String source = "skliros 1tb";
@@ -84,7 +85,7 @@ public class ProtectedWordsIndexTests extends ElasticsearchIntegrationTest {
 
         Thread.sleep(TimeValue.timeValueSeconds(2).getMillis());
 
-        protectedWords = WordDelimiterActionListener.protectedWords();
+        protectedWords = wordsListener.getProtectedWords();
         assertTrue(protectedWords.isEmpty());
 
         expected = new String[]{"skliros", "1", "tb"};

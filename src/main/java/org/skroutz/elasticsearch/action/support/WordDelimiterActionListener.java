@@ -10,8 +10,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class WordDelimiterActionListener implements ActionListener<SearchResponse> {
-	private static Set<String> protectedWords = new HashSet<String>();
+	private static WordDelimiterActionListener instance = null;
 	private final ESLogger logger = ESLoggerFactory.getLogger(WordDelimiterActionListener.class.getSimpleName());
+	private Set<String> protectedWords;
+	
+	protected WordDelimiterActionListener() {
+		protectedWords = new HashSet<String>();
+	}
 
 	public void onResponse(SearchResponse response) {
 		SearchHit[] hits = response.getHits().hits();
@@ -30,7 +35,15 @@ public class WordDelimiterActionListener implements ActionListener<SearchRespons
 		logger.error(e.getMessage());
 	}
 	
-	public static Set<String> protectedWords() {
+	public Set<String> getProtectedWords() {
 		return protectedWords;
+	}
+	
+	public synchronized static WordDelimiterActionListener getInstance() {
+		if(instance == null) {
+			instance = new WordDelimiterActionListener();
+		}
+
+		return instance;
 	}
 }

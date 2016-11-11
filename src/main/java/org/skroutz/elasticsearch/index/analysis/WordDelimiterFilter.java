@@ -249,7 +249,10 @@ public final class WordDelimiterFilter extends TokenFilter {
 
   @Override
   public boolean incrementToken() throws IOException {
-    while (true) {
+	WordDelimiterActionListener wordsListener = WordDelimiterActionListener.getInstance();
+	Set<String> protectedWords = wordsListener.getProtectedWords();
+    
+	while (true) {
       if (!hasSavedState) {
         // process a new input word
         if (!input.incrementToken()) {
@@ -263,7 +266,6 @@ public final class WordDelimiterFilter extends TokenFilter {
 
         iterator.setText(termBuffer, termLength);
         iterator.next();
-        Set<String> protectedWords = WordDelimiterActionListener.protectedWords();
 
         // word of no delimiters, or protected word: just return it
         if ((iterator.current == 0 && iterator.end == termLength) ||
