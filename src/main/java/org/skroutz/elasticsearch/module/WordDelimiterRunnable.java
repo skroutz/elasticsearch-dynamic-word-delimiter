@@ -7,6 +7,7 @@ import org.elasticsearch.common.util.concurrent.AbstractRunnable;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchType;
 import org.skroutz.elasticsearch.action.support.WordDelimiterActionListener;
 
 public class WordDelimiterRunnable extends AbstractRunnable {
@@ -14,6 +15,7 @@ public class WordDelimiterRunnable extends AbstractRunnable {
 	public static final TimeValue REFRESH_INTERVAL = TimeValue.timeValueMinutes(1);
 	public static final String INDEX_NAME = "protected_words";
 	public static final String INDEX_TYPE = "word";
+	public static final int RESULTS_SIZE = 150000;
 
 	private volatile boolean running;
 	private final Client client;
@@ -40,17 +42,18 @@ public class WordDelimiterRunnable extends AbstractRunnable {
     protected void doRun() {
     	running = true;
     	WordDelimiterActionListener listener = WordDelimiterActionListener.getInstance();
-    	SearchRequest searchRequest = new SearchRequest(index).types(type);
+    	SearchRequest searchRequest = client.prepareSearch().setSearchType(SearchType.QUERY_THEN_FETCH)
+    			.setIndices(index).setTypes(type).setSize(RESULTS_SIZE).request();
     	searchRequest.listenerThreaded(false);
     	
     	while (running) {
-    		client.search(searchRequest, listener);
-    		
     		try {
 				Thread.sleep(interval);
 			} catch (InterruptedException e) {
 				logger.error(e.getMessage());
 			}
+
+    		client.search(searchRequest, listener);
     	}
 	}
 }
