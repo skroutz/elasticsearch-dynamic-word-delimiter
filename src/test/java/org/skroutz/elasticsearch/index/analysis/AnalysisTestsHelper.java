@@ -36,22 +36,22 @@ import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 
 public class AnalysisTestsHelper {
 
-    public static TokenFilterFactory filterFactory(Settings indexSettings, String filterName) {
-        Index index = new Index("test");
+  public static TokenFilterFactory filterFactory(Settings indexSettings, String filterName) {
+    Index index = new Index("test");
 
-        Injector parentInjector = new ModulesBuilder()
-            .add(new SettingsModule(indexSettings),
-                 new EnvironmentModule(new Environment(indexSettings)),
-                 new IndicesAnalysisModule()).createInjector();
-        Injector injector = new ModulesBuilder()
-            .add(new IndexSettingsModule(index, indexSettings),
-                 new IndexNameModule(index),
-                 new AnalysisModule(indexSettings,
-                                    parentInjector.getInstance(IndicesAnalysisService.class))
-                 .addProcessor(new WordDelimiterBinderProcessor()))
-            .createChildInjector(parentInjector);
+    Injector parentInjector = new ModulesBuilder()
+        .add(new SettingsModule(indexSettings),
+            new EnvironmentModule(new Environment(indexSettings)),
+            new IndicesAnalysisModule()).createInjector();
+    Injector injector = new ModulesBuilder()
+        .add(new IndexSettingsModule(index, indexSettings),
+            new IndexNameModule(index),
+            new AnalysisModule(indexSettings,
+                parentInjector.getInstance(IndicesAnalysisService.class))
+            .addProcessor(new WordDelimiterBinderProcessor()))
+        .createChildInjector(parentInjector);
 
-        AnalysisService analysisService = injector.getInstance(AnalysisService.class);
-        return analysisService.tokenFilter(filterName);
-    }
+    AnalysisService analysisService = injector.getInstance(AnalysisService.class);
+    return analysisService.tokenFilter(filterName);
+  }
 }

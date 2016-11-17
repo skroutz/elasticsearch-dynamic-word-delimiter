@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 package org.skroutz.elasticsearch.index.analysis;
 
 import org.apache.lucene.analysis.TokenFilter;
@@ -87,7 +87,7 @@ import java.util.Set;
  * does not do this (such as {@link WhitespaceTokenizer}).
  */
 public final class WordDelimiterFilter extends TokenFilter {
-  
+
   public static final int LOWER = 0x01;
   public static final int UPPER = 0x02;
   public static final int DIGIT = 0x04;
@@ -157,7 +157,7 @@ public final class WordDelimiterFilter extends TokenFilter {
    * "O'Neil's" => "O", "Neil"
    */
   public static final int STEM_ENGLISH_POSSESSIVE = 256;
-  
+
   /**
    * If not null is the set of tokens to protect from being delimited
    *
@@ -165,7 +165,7 @@ public final class WordDelimiterFilter extends TokenFilter {
   final CharArraySet protWords;
 
   private final int flags;
-    
+
   private final CharTermAttribute termAttribute = addAttribute(CharTermAttribute.class);
   private final OffsetAttribute offsetAttribute = addAttribute(OffsetAttribute.class);
   private final PositionIncrementAttribute posIncAttribute = addAttribute(PositionIncrementAttribute.class);
@@ -249,10 +249,10 @@ public final class WordDelimiterFilter extends TokenFilter {
 
   @Override
   public boolean incrementToken() throws IOException {
-	WordDelimiterActionListener wordsListener = WordDelimiterActionListener.getInstance();
-	Set<String> protectedWords = wordsListener.getProtectedWords();
-    
-	while (true) {
+    WordDelimiterActionListener wordsListener = WordDelimiterActionListener.getInstance();
+    Set<String> protectedWords = wordsListener.getProtectedWords();
+
+    while (true) {
       if (!hasSavedState) {
         // process a new input word
         if (!input.incrementToken()) {
@@ -261,7 +261,7 @@ public final class WordDelimiterFilter extends TokenFilter {
 
         int termLength = termAttribute.length();
         char[] termBuffer = termAttribute.buffer();
-        
+
         accumPosInc += posIncAttribute.getPositionIncrement();
 
         iterator.setText(termBuffer, termLength);
@@ -270,13 +270,13 @@ public final class WordDelimiterFilter extends TokenFilter {
         // word of no delimiters, or protected word: just return it
         if ((iterator.current == 0 && iterator.end == termLength) ||
             (protWords != null && protWords.contains(termBuffer, 0, termLength)) ||
-			protectedWords.contains(termAttribute.toString())) {
+            protectedWords.contains(termAttribute.toString())) {
           posIncAttribute.setPositionIncrement(accumPosInc);
           accumPosInc = 0;
           first = false;
           return true;
         }
-        
+
         // word of simply delimiters
         if (iterator.end == WordDelimiterIterator.DONE && !has(PRESERVE_ORIGINAL)) {
           // if the posInc is 1, simply ignore it in the accumulation
@@ -292,7 +292,7 @@ public final class WordDelimiterFilter extends TokenFilter {
         hasOutputToken = false;
         hasOutputFollowingOriginal = !has(PRESERVE_ORIGINAL);
         lastConcatCount = 0;
-        
+
         if (has(PRESERVE_ORIGINAL)) {
           posIncAttribute.setPositionIncrement(accumPosInc);
           accumPosInc = 0;
@@ -300,7 +300,7 @@ public final class WordDelimiterFilter extends TokenFilter {
           return true;
         }
       }
-      
+
       // at the end of the string, output any concatenations
       if (iterator.end == WordDelimiterIterator.DONE) {
         if (!concat.isEmpty()) {
@@ -309,7 +309,7 @@ public final class WordDelimiterFilter extends TokenFilter {
             continue;
           }
         }
-        
+
         if (!concatAll.isEmpty()) {
           // only if we haven't output this same combo above!
           if (concatAll.subwordCount > lastConcatCount) {
@@ -319,7 +319,7 @@ public final class WordDelimiterFilter extends TokenFilter {
           }
           concatAll.clear();
         }
-        
+
         if (bufferedPos < bufferedLen) {
           if (bufferedPos == 0) {
             sorter.sort(0, bufferedLen);
@@ -333,13 +333,13 @@ public final class WordDelimiterFilter extends TokenFilter {
           first = false;
           return true;
         }
-        
+
         // no saved concatenations, on to the next input word
         bufferedPos = bufferedLen = 0;
         hasSavedState = false;
         continue;
       }
-      
+
       // word surrounded by delimiters: always output
       if (iterator.isSingleWord()) {
         generatePart(true);
@@ -347,9 +347,9 @@ public final class WordDelimiterFilter extends TokenFilter {
         first = false;
         return true;
       }
-      
+
       int wordType = iterator.type();
-      
+
       // do we already have queued up incompatible concatenations?
       if (!concat.isEmpty() && (concat.type & wordType) == 0) {
         if (flushConcatenation(concat)) {
@@ -359,7 +359,7 @@ public final class WordDelimiterFilter extends TokenFilter {
         }
         hasOutputToken = false;
       }
-      
+
       // add subwords depending upon options
       if (shouldConcatenate(wordType)) {
         if (concat.isEmpty()) {
@@ -367,18 +367,18 @@ public final class WordDelimiterFilter extends TokenFilter {
         }
         concatenate(concat);
       }
-      
+
       // add all subwords (catenateAll)
       if (has(CATENATE_ALL)) {
         concatenate(concatAll);
       }
-      
+
       // if we should output the word or number part
       if (shouldGenerateParts(wordType)) {
         generatePart(false);
         buffer();
       }
-        
+
       iterator.next();
     }
   }
@@ -395,14 +395,14 @@ public final class WordDelimiterFilter extends TokenFilter {
 
   // ================================================= Helper Methods ================================================
 
-  
+
   private AttributeSource.State buffered[] = new AttributeSource.State[8];
   private int startOff[] = new int[8];
   private int posInc[] = new int[8];
   private int bufferedLen = 0;
   private int bufferedPos = 0;
   private boolean first;
-  
+
   private class OffsetSorter extends InPlaceMergeSorter {
     @Override
     protected int compare(int i, int j) {
@@ -418,19 +418,19 @@ public final class WordDelimiterFilter extends TokenFilter {
       AttributeSource.State tmp = buffered[i];
       buffered[i] = buffered[j];
       buffered[j] = tmp;
-      
+
       int tmp2 = startOff[i];
       startOff[i] = startOff[j];
       startOff[j] = tmp2;
-      
+
       tmp2 = posInc[i];
       posInc[i] = posInc[j];
       posInc[j] = tmp2;
     }
   }
-  
+
   final OffsetSorter sorter = new OffsetSorter();
-  
+
   private void buffer() {
     if (bufferedLen == buffered.length) {
       int newSize = ArrayUtil.oversize(bufferedLen+1, 8);
@@ -443,7 +443,7 @@ public final class WordDelimiterFilter extends TokenFilter {
     buffered[bufferedLen] = captureState();
     bufferedLen++;
   }
-  
+
   /**
    * Saves the existing attribute states
    */
@@ -525,7 +525,7 @@ public final class WordDelimiterFilter extends TokenFilter {
 
     int startOffset = savedStartOffset + iterator.current;
     int endOffset = savedStartOffset + iterator.end;
-    
+
     if (hasIllegalOffsets) {
       // historically this filter did this regardless for 'isSingleWord', 
       // but we must do a sanity check:
@@ -556,7 +556,7 @@ public final class WordDelimiterFilter extends TokenFilter {
     }
 
     hasOutputToken = true;
-    
+
     if (!hasOutputFollowingOriginal) {
       // the first token following the original is 0 regardless
       hasOutputFollowingOriginal = true;
@@ -650,10 +650,10 @@ public final class WordDelimiterFilter extends TokenFilter {
         termAttribute.resizeBuffer(buffer.length());
       }
       char termbuffer[] = termAttribute.buffer();
-      
+
       buffer.getChars(0, buffer.length(), termbuffer, 0);
       termAttribute.setLength(buffer.length());
-        
+
       if (hasIllegalOffsets) {
         offsetAttribute.setOffset(savedStartOffset, savedEndOffset);
       }

@@ -10,40 +10,40 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class WordDelimiterActionListener implements ActionListener<SearchResponse> {
-	private static WordDelimiterActionListener instance = null;
-	private final ESLogger logger = ESLoggerFactory.getLogger(WordDelimiterActionListener.class.getSimpleName());
-	private Set<String> protectedWords;
-	
-	protected WordDelimiterActionListener() {
-		protectedWords = new HashSet<String>();
-	}
+  private static WordDelimiterActionListener instance = null;
+  private final ESLogger logger = ESLoggerFactory.getLogger(WordDelimiterActionListener.class.getSimpleName());
+  private Set<String> protectedWords;
 
-	public void onResponse(SearchResponse response) {
-		SearchHit[] hits = response.getHits().hits();
-		Set<String> localProtectedWords = new HashSet<String>();
+  protected WordDelimiterActionListener() {
+    protectedWords = new HashSet<String>();
+  }
 
-		String word;
-		for (SearchHit hit : hits) {
-			word = hit.getSource().get("word").toString();
-			localProtectedWords.add(word);
-		}
+  public void onResponse(SearchResponse response) {
+    SearchHit[] hits = response.getHits().hits();
+    Set<String> localProtectedWords = new HashSet<String>();
 
-		protectedWords = localProtectedWords;
-	}
+    String word;
+    for (SearchHit hit : hits) {
+      word = hit.getSource().get("word").toString();
+      localProtectedWords.add(word);
+    }
 
-	public void onFailure(Throwable e) {
-		logger.error(e.getMessage());
-	}
-	
-	public Set<String> getProtectedWords() {
-		return protectedWords;
-	}
-	
-	public synchronized static WordDelimiterActionListener getInstance() {
-		if(instance == null) {
-			instance = new WordDelimiterActionListener();
-		}
+    protectedWords = localProtectedWords;
+  }
 
-		return instance;
-	}
+  public void onFailure(Throwable e) {
+    logger.error(e.getMessage());
+  }
+
+  public Set<String> getProtectedWords() {
+    return protectedWords;
+  }
+
+  public synchronized static WordDelimiterActionListener getInstance() {
+    if(instance == null) {
+      instance = new WordDelimiterActionListener();
+    }
+
+    return instance;
+  }
 }

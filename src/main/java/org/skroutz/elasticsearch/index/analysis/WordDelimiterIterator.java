@@ -27,31 +27,31 @@ public final class WordDelimiterIterator {
 
   /** Indicates the end of iteration */
   public static final int DONE = -1;
-  
+
   public static final byte[] DEFAULT_WORD_DELIM_TABLE;
 
   char text[];
   int length;
-  
+
   /** start position of text, excluding leading delimiters */
   int startBounds;
   /** end position of text, excluding trailing delimiters */
   int endBounds;
-  
+
   /** Beginning of subword */
   int current;
   /** End of subword */
   int end;
-  
+
   /* does this string end with a possessive such as 's */
   private boolean hasFinalPossessive = false;
-  
+
   /**
    * If false, causes case changes to be ignored (subwords will only be generated
    * given SUBWORD_DELIM tokens). (Defaults to true)
    */
   final boolean splitOnCaseChange;
-  
+
   /**
    * If false, causes numeric changes to be ignored (subwords will only be generated
    * given SUBWORD_DELIM tokens). (Defaults to true)
@@ -66,7 +66,7 @@ public final class WordDelimiterIterator {
   final boolean stemEnglishPossessive;
 
   private final byte[] charTypeTable;
-  
+
   /** if true, need to skip over a possessive found in the last call to next() */
   private boolean skipPossessive = false;
 
@@ -107,7 +107,7 @@ public final class WordDelimiterIterator {
     this.splitOnNumerics = splitOnNumerics;
     this.stemEnglishPossessive = stemEnglishPossessive;
   }
-  
+
   /**
    * Advance to the next subword in the string.
    *
@@ -118,14 +118,14 @@ public final class WordDelimiterIterator {
     if (current == DONE) {
       return DONE;
     }
-    
+
     if (skipPossessive) {
       current += 2;
       skipPossessive = false;
     }
 
     int lastType = 0;
-    
+
     while (current < endBounds && (isSubwordDelim(lastType = charType(text[current])))) {
       current++;
     }
@@ -133,7 +133,7 @@ public final class WordDelimiterIterator {
     if (current >= endBounds) {
       return end = DONE;
     }
-    
+
     for (end = current + 1; end < endBounds; end++) {
       int type = charType(text[end]);
       if (isBreak(lastType, type)) {
@@ -141,11 +141,11 @@ public final class WordDelimiterIterator {
       }
       lastType = type;
     }
-    
+
     if (end < endBounds - 1 && endsWithPossessive(end + 2)) {
       skipPossessive = true;
     }
-    
+
     return end;
   }
 
@@ -160,15 +160,15 @@ public final class WordDelimiterIterator {
     if (end == DONE) {
       return 0;
     }
-    
+
     int type = charType(text[current]);
     switch (type) {
-      // return ALPHA word type for both lower and upper
-      case LOWER:
-      case UPPER:
-        return ALPHA;
-      default:
-        return type;
+    // return ALPHA word type for both lower and upper
+    case LOWER:
+    case UPPER:
+      return ALPHA;
+    default:
+      return type;
     }
   }
 
@@ -199,7 +199,7 @@ public final class WordDelimiterIterator {
     if ((type & lastType) != 0) {
       return false;
     }
-    
+
     if (!splitOnCaseChange && isAlpha(lastType) && isAlpha(type)) {
       // ALPHA->ALPHA: always ignore if case isn't considered.
       return false;
@@ -213,7 +213,7 @@ public final class WordDelimiterIterator {
 
     return true;
   }
-  
+
   /**
    * Determines if the current word contains only one subword.  Note, it could be potentially surrounded by delimiters
    *
@@ -227,7 +227,7 @@ public final class WordDelimiterIterator {
       return current == startBounds && end == endBounds;
     }
   }
-   
+
   /**
    * Set the internal word bounds (remove leading and trailing delimiters). Note, if a possessive is found, don't remove
    * it yet, simply note it.
@@ -236,7 +236,7 @@ public final class WordDelimiterIterator {
     while (startBounds < length && (isSubwordDelim(charType(text[startBounds])))) {
       startBounds++;
     }
-    
+
     while (endBounds > startBounds && (isSubwordDelim(charType(text[endBounds - 1])))) {
       endBounds--;
     }
@@ -245,7 +245,7 @@ public final class WordDelimiterIterator {
     }
     current = startBounds;
   }
-  
+
   /**
    * Determines if the text at the given position indicates an English possessive which should be removed
    *
@@ -254,11 +254,11 @@ public final class WordDelimiterIterator {
    */
   private boolean endsWithPossessive(int pos) {
     return (stemEnglishPossessive &&
-            pos > 2 &&
-            text[pos - 2] == '\'' &&
-            (text[pos - 1] == 's' || text[pos - 1] == 'S') &&
-            isAlpha(charType(text[pos - 3])) &&
-            (pos == endBounds || isSubwordDelim(charType(text[pos]))));
+        pos > 2 &&
+        text[pos - 2] == '\'' &&
+        (text[pos - 1] == 's' || text[pos - 1] == 'S') &&
+        isAlpha(charType(text[pos - 3])) &&
+        (pos == endBounds || isSubwordDelim(charType(text[pos]))));
   }
 
   /**
@@ -273,7 +273,7 @@ public final class WordDelimiterIterator {
     }
     return getType(ch);
   }
-  
+
   /**
    * Computes the type of the given character
    *
@@ -282,21 +282,21 @@ public final class WordDelimiterIterator {
    */
   public static byte getType(int ch) {
     switch (Character.getType(ch)) {
-      case Character.UPPERCASE_LETTER: return UPPER;
-      case Character.LOWERCASE_LETTER: return LOWER;
+    case Character.UPPERCASE_LETTER: return UPPER;
+    case Character.LOWERCASE_LETTER: return LOWER;
 
-      case Character.TITLECASE_LETTER:
-      case Character.MODIFIER_LETTER:
-      case Character.OTHER_LETTER:
-      case Character.NON_SPACING_MARK:
-      case Character.ENCLOSING_MARK:  // depends what it encloses?
-      case Character.COMBINING_SPACING_MARK:
-        return ALPHA; 
+    case Character.TITLECASE_LETTER:
+    case Character.MODIFIER_LETTER:
+    case Character.OTHER_LETTER:
+    case Character.NON_SPACING_MARK:
+    case Character.ENCLOSING_MARK:  // depends what it encloses?
+    case Character.COMBINING_SPACING_MARK:
+      return ALPHA; 
 
-      case Character.DECIMAL_DIGIT_NUMBER:
-      case Character.LETTER_NUMBER:
-      case Character.OTHER_NUMBER:
-        return DIGIT;
+    case Character.DECIMAL_DIGIT_NUMBER:
+    case Character.LETTER_NUMBER:
+    case Character.OTHER_NUMBER:
+      return DIGIT;
 
       // case Character.SPACE_SEPARATOR:
       // case Character.LINE_SEPARATOR:
@@ -305,8 +305,8 @@ public final class WordDelimiterIterator {
       // case Character.FORMAT:
       // case Character.PRIVATE_USE:
 
-      case Character.SURROGATE:  // prevent splitting
-        return ALPHA|DIGIT;  
+    case Character.SURROGATE:  // prevent splitting
+      return ALPHA|DIGIT;  
 
       // case Character.DASH_PUNCTUATION:
       // case Character.START_PUNCTUATION:
@@ -320,7 +320,7 @@ public final class WordDelimiterIterator {
       // case Character.INITIAL_QUOTE_PUNCTUATION:
       // case Character.FINAL_QUOTE_PUNCTUATION:
 
-      default: return SUBWORD_DELIM;
+    default: return SUBWORD_DELIM;
     }
   }
 }

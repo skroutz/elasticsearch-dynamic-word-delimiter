@@ -23,74 +23,74 @@ import java.util.Set;
 
 @ThreadLeakScope(Scope.NONE)
 public class ProtectedWordsIndexTests extends ElasticsearchIntegrationTest {
-	private final WordDelimiterActionListener wordsListener = WordDelimiterActionListener.getInstance();
+  private final WordDelimiterActionListener wordsListener = WordDelimiterActionListener.getInstance();
 
-    @Override
-    protected Settings nodeSettings(int nodeOrdinal) {
-        return settingsBuilder()
-            .put("plugin.types", WordDelimiterPlugin.class.getName())
-            .put("plugin.skroutz_word_delimiter.refresh_interval", "500ms")
-            .put(super.nodeSettings(nodeOrdinal))
-            .build();
-    }
+  @Override
+  protected Settings nodeSettings(int nodeOrdinal) {
+    return settingsBuilder()
+        .put("plugin.types", WordDelimiterPlugin.class.getName())
+        .put("plugin.skroutz_word_delimiter.refresh_interval", "500ms")
+        .put(super.nodeSettings(nodeOrdinal))
+        .build();
+  }
 
-    @Test
-    public void testAddWordToIndex() throws Exception {
-        Settings indexSettings = settingsBuilder()
-            .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
-            .put("index.analysis.filter.my_word_delimiter.type", "skroutz_word_delimiter")
-            .build();
-        TokenFilterFactory filterFactory = filterFactory(indexSettings, "my_word_delimiter");
+  @Test
+  public void testAddWordToIndex() throws Exception {
+    Settings indexSettings = settingsBuilder()
+        .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
+        .put("index.analysis.filter.my_word_delimiter.type", "skroutz_word_delimiter")
+        .build();
+    TokenFilterFactory filterFactory = filterFactory(indexSettings, "my_word_delimiter");
 
-        createIndex("protected_words");
-        ensureGreen();
-        client().prepareIndex("protected_words", "word", "1").setSource("word", "1tb").execute();
+    createIndex("protected_words");
+    ensureGreen();
+    client().prepareIndex("protected_words", "word", "1").setSource("word", "1tb").execute();
 
-        Thread.sleep(TimeValue.timeValueSeconds(2).getMillis());
+    Thread.sleep(TimeValue.timeValueSeconds(2).getMillis());
 
-        Set<String> protectedWords = wordsListener.getProtectedWords();
-        assertTrue(protectedWords.size() == 1);
+    Set<String> protectedWords = wordsListener.getProtectedWords();
+    assertTrue(protectedWords.size() == 1);
 
-        String source = "skliros 1tb";
-        String[] expected = new String[]{"skliros", "1tb"};
-        Tokenizer tokenizer = new WhitespaceTokenizer(new StringReader(source));
+    String source = "skliros 1tb";
+    String[] expected = new String[]{"skliros", "1tb"};
+    Tokenizer tokenizer = new WhitespaceTokenizer(new StringReader(source));
 
-        assertTokenStreamContents(filterFactory.create(tokenizer), expected);
-    }
+    assertTokenStreamContents(filterFactory.create(tokenizer), expected);
+  }
 
-    @Test
-    public void testRemoveWordFromIndex() throws Exception {
-        Settings indexSettings = settingsBuilder()
-            .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
-            .put("index.analysis.filter.my_word_delimiter.type", "skroutz_word_delimiter")
-            .build();
-        TokenFilterFactory filterFactory = filterFactory(indexSettings, "my_word_delimiter");
+  @Test
+  public void testRemoveWordFromIndex() throws Exception {
+    Settings indexSettings = settingsBuilder()
+        .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
+        .put("index.analysis.filter.my_word_delimiter.type", "skroutz_word_delimiter")
+        .build();
+    TokenFilterFactory filterFactory = filterFactory(indexSettings, "my_word_delimiter");
 
-        createIndex("protected_words");
-        ensureGreen();
-        client().prepareIndex("protected_words", "word", "1").setSource("word", "1tb").execute();
+    createIndex("protected_words");
+    ensureGreen();
+    client().prepareIndex("protected_words", "word", "1").setSource("word", "1tb").execute();
 
-        Thread.sleep(TimeValue.timeValueSeconds(2).getMillis());
+    Thread.sleep(TimeValue.timeValueSeconds(2).getMillis());
 
-        Set<String> protectedWords = wordsListener.getProtectedWords();
-        assertTrue(protectedWords.size() == 1);
+    Set<String> protectedWords = wordsListener.getProtectedWords();
+    assertTrue(protectedWords.size() == 1);
 
-        String source = "skliros 1tb";
-        String[] expected = new String[]{"skliros", "1tb"};
-        Tokenizer tokenizer = new WhitespaceTokenizer(new StringReader(source));
+    String source = "skliros 1tb";
+    String[] expected = new String[]{"skliros", "1tb"};
+    Tokenizer tokenizer = new WhitespaceTokenizer(new StringReader(source));
 
-        assertTokenStreamContents(filterFactory.create(tokenizer), expected);
+    assertTokenStreamContents(filterFactory.create(tokenizer), expected);
 
-        client().prepareDelete("protected_words", "word", "1").execute().actionGet();
+    client().prepareDelete("protected_words", "word", "1").execute().actionGet();
 
-        Thread.sleep(TimeValue.timeValueSeconds(2).getMillis());
+    Thread.sleep(TimeValue.timeValueSeconds(2).getMillis());
 
-        protectedWords = wordsListener.getProtectedWords();
-        assertTrue(protectedWords.isEmpty());
+    protectedWords = wordsListener.getProtectedWords();
+    assertTrue(protectedWords.isEmpty());
 
-        expected = new String[]{"skliros", "1", "tb"};
-        tokenizer = new WhitespaceTokenizer(new StringReader(source));
+    expected = new String[]{"skliros", "1", "tb"};
+    tokenizer = new WhitespaceTokenizer(new StringReader(source));
 
-        assertTokenStreamContents(filterFactory.create(tokenizer), expected);
-    }
+    assertTokenStreamContents(filterFactory.create(tokenizer), expected);
+  }
 }
