@@ -11,8 +11,7 @@ import org.elasticsearch.action.search.SearchType;
 import org.skroutz.elasticsearch.action.support.WordDelimiterActionListener;
 
 public class WordDelimiterRunnable extends AbstractRunnable {
-  // TODO: Decide on some reasonable value
-  public static final TimeValue REFRESH_INTERVAL = TimeValue.timeValueMinutes(1);
+  public static final TimeValue REFRESH_INTERVAL = TimeValue.timeValueMinutes(5);
   public static final String INDEX_NAME = "protected_words";
   public static final String INDEX_TYPE = "word";
   public static final int RESULTS_SIZE = 150000;
