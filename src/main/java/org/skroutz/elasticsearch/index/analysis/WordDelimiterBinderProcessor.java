@@ -6,6 +6,6 @@ public class WordDelimiterBinderProcessor extends AnalysisModule.AnalysisBinderP
 
   @Override
   public void processTokenFilters(TokenFiltersBindings tokenFiltersBindings) {
-    tokenFiltersBindings.processTokenFilter("skroutz_word_delimiter", WordDelimiterTokenFilterFactory.class);
+    tokenFiltersBindings.processTokenFilter("dynamic_word_delimiter", WordDelimiterTokenFilterFactory.class);
   }
 }

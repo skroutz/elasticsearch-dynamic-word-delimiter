@@ -17,7 +17,7 @@ public class SimpleWordDelimiterTokenFilterTests {
   public void testWordDelimiterTokenFilter() {
     Settings indexSettings = settingsBuilder()
         .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
-        .put("index.analysis.filter.my_word_delimiter.type", "skroutz_word_delimiter")
+        .put("index.analysis.filter.my_word_delimiter.type", "dynamic_word_delimiter")
         .build();
 
     TokenFilterFactory filterFactory = filterFactory(indexSettings, "my_word_delimiter");

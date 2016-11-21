@@ -1,4 +1,4 @@
-package org.skroutz.elasticsearch.module;
+package org.elasticsearch.module;
 
 import org.elasticsearch.common.component.AbstractLifecycleComponent;
 import org.elasticsearch.common.inject.Inject;

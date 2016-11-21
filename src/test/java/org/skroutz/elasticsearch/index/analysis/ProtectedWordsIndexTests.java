@@ -9,8 +9,8 @@ import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.test.ElasticsearchIntegrationTest;
 import java.io.StringReader;
-import org.skroutz.elasticsearch.action.support.WordDelimiterActionListener;
-import org.skroutz.elasticsearch.plugin.WordDelimiterPlugin;
+import org.elasticsearch.action.support.WordDelimiterActionListener;
+import org.elasticsearch.plugin.WordDelimiterPlugin;
 import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope.Scope;
 
@@ -29,7 +29,7 @@ public class ProtectedWordsIndexTests extends ElasticsearchIntegrationTest {
   protected Settings nodeSettings(int nodeOrdinal) {
     return settingsBuilder()
         .put("plugin.types", WordDelimiterPlugin.class.getName())
-        .put("plugin.skroutz_word_delimiter.refresh_interval", "500ms")
+        .put("plugin.dynamic_word_delimiter.refresh_interval", "500ms")
         .put(super.nodeSettings(nodeOrdinal))
         .build();
   }
@@ -38,7 +38,7 @@ public class ProtectedWordsIndexTests extends ElasticsearchIntegrationTest {
   public void testAddWordToIndex() throws Exception {
     Settings indexSettings = settingsBuilder()
         .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
-        .put("index.analysis.filter.my_word_delimiter.type", "skroutz_word_delimiter")
+        .put("index.analysis.filter.my_word_delimiter.type", "dynamic_word_delimiter")
         .build();
     TokenFilterFactory filterFactory = filterFactory(indexSettings, "my_word_delimiter");
 
@@ -62,7 +62,7 @@ public class ProtectedWordsIndexTests extends ElasticsearchIntegrationTest {
   public void testRemoveWordFromIndex() throws Exception {
     Settings indexSettings = settingsBuilder()
         .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
-        .put("index.analysis.filter.my_word_delimiter.type", "skroutz_word_delimiter")
+        .put("index.analysis.filter.my_word_delimiter.type", "dynamic_word_delimiter")
         .build();
     TokenFilterFactory filterFactory = filterFactory(indexSettings, "my_word_delimiter");
 

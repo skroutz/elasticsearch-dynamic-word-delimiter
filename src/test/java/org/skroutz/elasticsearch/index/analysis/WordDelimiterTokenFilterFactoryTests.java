@@ -38,7 +38,7 @@ public class WordDelimiterTokenFilterFactoryTests extends ElasticsearchTokenStre
   public void testDefault() throws IOException {
     Settings indexSettings = settingsBuilder()
         .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
-        .put("index.analysis.filter.my_word_delimiter.type", "skroutz_word_delimiter")
+        .put("index.analysis.filter.my_word_delimiter.type", "dynamic_word_delimiter")
         .build();
     TokenFilterFactory filterFactory = filterFactory(indexSettings, "my_word_delimiter");
 
@@ -53,7 +53,7 @@ public class WordDelimiterTokenFilterFactoryTests extends ElasticsearchTokenStre
   public void testCatenateWords() throws IOException {
     Settings indexSettings = settingsBuilder()
         .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
-        .put("index.analysis.filter.my_word_delimiter.type", "skroutz_word_delimiter")
+        .put("index.analysis.filter.my_word_delimiter.type", "dynamic_word_delimiter")
         .put("index.analysis.filter.my_word_delimiter.catenate_words", "true")
         .put("index.analysis.filter.my_word_delimiter.generate_word_parts", "false")
         .build();
@@ -70,7 +70,7 @@ public class WordDelimiterTokenFilterFactoryTests extends ElasticsearchTokenStre
   public void testCatenateNumbers() throws IOException {
     Settings indexSettings = settingsBuilder()
         .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
-        .put("index.analysis.filter.my_word_delimiter.type", "skroutz_word_delimiter")
+        .put("index.analysis.filter.my_word_delimiter.type", "dynamic_word_delimiter")
         .put("index.analysis.filter.my_word_delimiter.generate_number_parts", "false")
         .put("index.analysis.filter.my_word_delimiter.catenate_numbers", "true")
         .build();
@@ -87,7 +87,7 @@ public class WordDelimiterTokenFilterFactoryTests extends ElasticsearchTokenStre
   public void testCatenateAll() throws IOException {
     Settings indexSettings = settingsBuilder()
         .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
-        .put("index.analysis.filter.my_word_delimiter.type", "skroutz_word_delimiter")
+        .put("index.analysis.filter.my_word_delimiter.type", "dynamic_word_delimiter")
         .put("index.analysis.filter.my_word_delimiter.generate_word_parts", "false")
         .put("index.analysis.filter.my_word_delimiter.generate_number_parts", "false")
         .put("index.analysis.filter.my_word_delimiter.catenate_all", "true")
@@ -105,7 +105,7 @@ public class WordDelimiterTokenFilterFactoryTests extends ElasticsearchTokenStre
   public void testSplitOnCaseChange() throws IOException {
     Settings indexSettings = settingsBuilder()
         .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
-        .put("index.analysis.filter.my_word_delimiter.type", "skroutz_word_delimiter")
+        .put("index.analysis.filter.my_word_delimiter.type", "dynamic_word_delimiter")
         .put("index.analysis.filter.my_word_delimiter.split_on_case_change", "false")
         .build();
     TokenFilterFactory filterFactory = filterFactory(indexSettings, "my_word_delimiter");
@@ -120,7 +120,7 @@ public class WordDelimiterTokenFilterFactoryTests extends ElasticsearchTokenStre
   public void testPreserveOriginal() throws IOException {
     Settings indexSettings = settingsBuilder()
         .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
-        .put("index.analysis.filter.my_word_delimiter.type", "skroutz_word_delimiter")
+        .put("index.analysis.filter.my_word_delimiter.type", "dynamic_word_delimiter")
         .put("index.analysis.filter.my_word_delimiter.preserve_original", "true")
         .build();
     TokenFilterFactory filterFactory = filterFactory(indexSettings, "my_word_delimiter");
@@ -136,7 +136,7 @@ public class WordDelimiterTokenFilterFactoryTests extends ElasticsearchTokenStre
   public void testStemEnglishPossessive() throws IOException {
     Settings indexSettings = settingsBuilder()
         .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
-        .put("index.analysis.filter.my_word_delimiter.type", "skroutz_word_delimiter")
+        .put("index.analysis.filter.my_word_delimiter.type", "dynamic_word_delimiter")
         .put("index.analysis.filter.my_word_delimiter.stem_english_possessive", "false")
         .build();
     TokenFilterFactory filterFactory = filterFactory(indexSettings, "my_word_delimiter");
@@ -153,7 +153,7 @@ public class WordDelimiterTokenFilterFactoryTests extends ElasticsearchTokenStre
   public void testPartsAndCatenate() throws IOException {
     Settings indexSettings = settingsBuilder()
         .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
-        .put("index.analysis.filter.my_word_delimiter.type", "skroutz_word_delimiter")
+        .put("index.analysis.filter.my_word_delimiter.type", "dynamic_word_delimiter")
         .put("index.analysis.filter.my_word_delimiter.catenate_words", "true")
         .put("index.analysis.filter.my_word_delimiter.generate_word_parts", "true")
         .build();

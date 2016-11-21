@@ -1,4 +1,4 @@
-package org.skroutz.elasticsearch.module;
+package org.elasticsearch.module;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
@@ -8,7 +8,7 @@ import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchType;
-import org.skroutz.elasticsearch.action.support.WordDelimiterActionListener;
+import org.elasticsearch.action.support.WordDelimiterActionListener;
 
 public class WordDelimiterRunnable extends AbstractRunnable {
   public static final TimeValue REFRESH_INTERVAL = TimeValue.timeValueMinutes(5);
@@ -25,9 +25,9 @@ public class WordDelimiterRunnable extends AbstractRunnable {
 
   public WordDelimiterRunnable(Client client, Settings settings) {
     this.client = client;
-    this.index = settings.get("plugin.skroutz_word_delimiter.protected_words_index", INDEX_NAME);
-    this.type = settings.get("plugin.skroutz_word_delimiter.protected_words_type", INDEX_TYPE);
-    this.interval = settings.getAsTime("plugin.skroutz_word_delimiter.refresh_interval", REFRESH_INTERVAL).getMillis();
+    this.index = settings.get("plugin.dynamic_word_delimiter.protected_words_index", INDEX_NAME);
+    this.type = settings.get("plugin.dynamic_word_delimiter.protected_words_type", INDEX_TYPE);
+    this.interval = settings.getAsTime("plugin.dynamic_word_delimiter.refresh_interval", REFRESH_INTERVAL).getMillis();
   }
 
   public void stopRunning() {

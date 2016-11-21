@@ -1,4 +1,4 @@
-package org.skroutz.elasticsearch.action.support;
+package org.elasticsearch.action.support;
 
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.action.ActionListener;

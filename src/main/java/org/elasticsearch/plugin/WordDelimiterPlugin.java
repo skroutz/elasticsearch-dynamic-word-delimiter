@@ -1,9 +1,9 @@
-package org.skroutz.elasticsearch.plugin;
+package org.elasticsearch.plugin;
 
 import org.elasticsearch.plugins.AbstractPlugin;
 import org.elasticsearch.index.analysis.AnalysisModule;
 import org.elasticsearch.common.component.LifecycleComponent;
-import org.skroutz.elasticsearch.module.WordDelimiterService;
+import org.elasticsearch.module.WordDelimiterService;
 import org.skroutz.elasticsearch.index.analysis.WordDelimiterBinderProcessor;
 
 import java.util.Collection;
@@ -18,11 +18,11 @@ public class WordDelimiterPlugin extends AbstractPlugin {
   }
 
   public String name() {
-    return "skroutz-word-delimiter";
+    return "dynamic-word-delimiter";
   }
 
   public String description() {
-    return "Word delimiter customized for the needs of www.skroutz.gr";
+    return "Dynamic word delimiter customized for the needs of www.skroutz.gr";
   }
 
   public void onModule(AnalysisModule module) {

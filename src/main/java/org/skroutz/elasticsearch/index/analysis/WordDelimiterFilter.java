@@ -31,7 +31,7 @@ import org.apache.lucene.util.AttributeSource;
 import org.apache.lucene.util.InPlaceMergeSorter;
 import org.apache.lucene.util.RamUsageEstimator;
 import org.apache.lucene.util.Version;
-import org.skroutz.elasticsearch.action.support.WordDelimiterActionListener;
+import org.elasticsearch.action.support.WordDelimiterActionListener;
 
 import java.io.IOException;
 import java.util.Arrays;

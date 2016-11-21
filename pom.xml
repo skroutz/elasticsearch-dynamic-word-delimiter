@@ -2,12 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<name>elasticsearch-skroutz-word-delimiter</name>
+	<name>elasticsearch-dynamic-word-delimiter</name>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>gr.skroutz</groupId>
-	<artifactId>elasticsearch-skroutz-word-delimiter</artifactId>
+	<artifactId>elasticsearch-dynamic-word-delimiter</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<description>Custom word delimiter for ElasticSearch</description>
+	<description>Dynamic word delimiter for ElasticSearch</description>
 	<packaging>jar</packaging>
 	<inceptionYear>2015</inceptionYear>
 
@@ -38,9 +38,9 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:git:git@github.com:skroutz/elasticsearch-skroutz-word-delimiter.git</connection>
-		<developerConnection>scm:git:git@github.com:skroutz/elasticsearch-skroutz-word-delimiter.git</developerConnection>
-		<url>http://github.com/skroutz/elasticsearch-skroutz-word-delimiter</url>
+		<connection>scm:git:git@github.com:skroutz/elasticsearch-dynamic-word-delimiter.git</connection>
+		<developerConnection>scm:git:git@github.com:skroutz/elasticsearch-dynamic-word-delimiter.git</developerConnection>
+		<url>http://github.com/skroutz/elasticsearch-dynamic-word-delimiter</url>
 	</scm>
 
 	<distributionManagement>
