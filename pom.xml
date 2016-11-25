@@ -7,8 +7,7 @@
 	<groupId>gr.skroutz</groupId>
 	<artifactId>elasticsearch-dynamic-word-delimiter</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<description>Dynamic word delimiter for ElasticSearch</description>
-	<packaging>jar</packaging>
+	<description>Dynamic word delimiter token filter for ElasticSearch</description>
 	<inceptionYear>2015</inceptionYear>
 
 	<licenses>
@@ -44,10 +43,10 @@
 	</scm>
 
 	<distributionManagement>
-		<repository>
+		<snapshotRepository>
 			<id>ossrh</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</repository>
+		</snapshotRepository>
 	</distributionManagement>
 
 	<parent>
@@ -82,7 +81,6 @@
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
 			<version>${elasticsearch.version}</version>
-			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 
@@ -112,18 +110,8 @@
 	<build>
 		<resources>
 			<resource>
-				<directory>${basedir}/src/main/resources</directory>
+				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
-				<includes>
-					<include>es-plugin.properties</include>
-				</includes>
-			</resource>
-			<resource>
-				<directory>${basedir}/src/main/resources</directory>
-				<filtering>false</filtering>
-				<excludes>
-					<exclude>es-plugin.properties</exclude>
-				</excludes>
 			</resource>
 		</resources>
 		<plugins>
