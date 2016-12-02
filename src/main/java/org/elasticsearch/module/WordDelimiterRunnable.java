@@ -52,7 +52,8 @@ public class WordDelimiterRunnable extends AbstractRunnable {
         logger.error(e.getMessage());
       }
 
-      client.search(searchRequest, listener);
+      if (client.admin().indices().prepareExists(index).get().isExists())
+        client.search(searchRequest, listener);
     }
   }
 }
