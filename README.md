@@ -22,12 +22,13 @@ defined words.
 
 In order to install the latest version of the plugin, simply run:
 
-    bin/plugin -install gr.skroutz/elasticsearch-dynamic-word-delimiter/1.0.0
+    bin/plugin -install gr.skroutz/elasticsearch-dynamic-word-delimiter/1.0.1
 
 Versions:
 
 Dynamic Word Delimiter Plugin | ElasticSearch
 ------------------------------|------------------
+1.0.1                         | 1.5.x
 1.0.0                         | 1.5.x
 
 ### YML configuration example
