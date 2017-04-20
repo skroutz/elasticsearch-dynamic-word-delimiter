@@ -34,7 +34,8 @@ public class WordDelimiterRunnable extends AbstractRunnable {
     running = false;
   }
 
-  public void onFailure(Throwable t) {
+  @Override
+  public void onFailure(Exception t) {
     logger.error(t.getMessage());
   }
 
@@ -43,7 +44,6 @@ public class WordDelimiterRunnable extends AbstractRunnable {
     WordDelimiterActionListener listener = WordDelimiterActionListener.getInstance();
     SearchRequest searchRequest = client.prepareSearch().setSearchType(SearchType.QUERY_THEN_FETCH)
         .setIndices(index).setTypes(type).setSize(RESULTS_SIZE).request();
-    searchRequest.listenerThreaded(false);
 
     while (running) {
       try {
