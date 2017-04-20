@@ -1,37 +1,60 @@
 package org.elasticsearch.plugin;
 
-import org.elasticsearch.plugins.AbstractPlugin;
-import org.elasticsearch.index.analysis.AnalysisModule;
+import org.elasticsearch.common.settings.Setting;
+import org.elasticsearch.index.analysis.TokenFilterFactory;
+import org.elasticsearch.indices.analysis.AnalysisModule;
+import org.elasticsearch.module.WordDelimiterRunnable;
+import org.elasticsearch.plugins.AnalysisPlugin;
 import org.elasticsearch.common.component.LifecycleComponent;
 import org.elasticsearch.module.WordDelimiterService;
-import org.skroutz.elasticsearch.index.analysis.WordDelimiterBinderProcessor;
+import org.elasticsearch.plugins.Plugin;
 
-import java.util.Collection;
-import static org.elasticsearch.common.collect.Lists.newArrayList;
+import java.util.*;
+import java.util.function.Function;
 
-public class WordDelimiterPlugin extends AbstractPlugin {
-  @SuppressWarnings("rawtypes")
-  private final Collection<Class<? extends LifecycleComponent>> services = newArrayList();
+import org.skroutz.elasticsearch.index.analysis.WordDelimiterTokenFilterFactory;
+
+public class WordDelimiterPlugin extends Plugin implements AnalysisPlugin {
+
+  private final Collection<Class<? extends LifecycleComponent>> services =
+          new ArrayList();
 
   public WordDelimiterPlugin() {
     services.add(WordDelimiterService.class);
   }
 
-  public String name() {
-    return "dynamic-word-delimiter";
-  }
-
-  public String description() {
-    return "Dynamic word delimiter customized for the needs of www.skroutz.gr";
-  }
-
-  public void onModule(AnalysisModule module) {
-    module.addProcessor(new WordDelimiterBinderProcessor());
-  }
-
-  @SuppressWarnings("rawtypes")
   @Override
-  public Collection<Class<? extends LifecycleComponent>> services() {
-    return services;
+  public Collection<Class<? extends LifecycleComponent>> getGuiceServiceClasses() {
+    return Collections.singleton(WordDelimiterService.class);
   }
+
+  @Override
+  public Map<String, AnalysisModule.AnalysisProvider<TokenFilterFactory>> getTokenFilters() {
+    return Collections.singletonMap("dynamic_word_delimiter",
+            WordDelimiterTokenFilterFactory::new);
+  }
+
+  @Override
+  public List<Setting<?>> getSettings() {
+
+    List<Setting<?>> settings = Arrays.asList(
+            new Setting<>(
+                    "plugin.dynamic_word_delimiter.protected_words_index",
+                    WordDelimiterRunnable.INDEX_NAME,
+                    Function.identity(),
+                    Setting.Property.NodeScope),
+            new Setting<>(
+                    "plugin.dynamic_word_delimiter.protected_words_type",
+                    WordDelimiterRunnable.INDEX_TYPE,
+                    Function.identity(),
+                    Setting.Property.NodeScope),
+            Setting.timeSetting(
+                    "plugin.dynamic_word_delimiter.refresh_interval",
+                    WordDelimiterRunnable.REFRESH_INTERVAL,
+                    Setting.Property.NodeScope)
+    );
+
+    return settings;
+  }
+
 }
