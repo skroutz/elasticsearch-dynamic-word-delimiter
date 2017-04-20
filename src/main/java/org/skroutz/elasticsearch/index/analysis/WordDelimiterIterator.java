@@ -61,7 +61,7 @@ public final class WordDelimiterIterator {
   /**
    * If true, causes trailing "'s" to be removed for each subword. (Defaults to true)
    * <p/>
-   * "O'Neil's" => "O", "Neil"
+   * "O'Neil's" =&gt; "O", "Neil"
    */
   final boolean stemEnglishPossessive;
 
@@ -95,11 +95,11 @@ public final class WordDelimiterIterator {
 
   /**
    * Create a new WordDelimiterIterator operating with the supplied rules.
-   * 
+   *
    * @param charTypeTable table containing character types
    * @param splitOnCaseChange if true, causes "PowerShot" to be two tokens; ("Power-Shot" remains two parts regards)
    * @param splitOnNumerics if true, causes "j2se" to be three tokens; "j" "2" "se"
-   * @param stemEnglishPossessive if true, causes trailing "'s" to be removed for each subword: "O'Neil's" => "O", "Neil"
+   * @param stemEnglishPossessive if true, causes trailing "'s" to be removed for each subword: "O'Neil's" =&gt; "O", "Neil"
    */
   WordDelimiterIterator(byte[] charTypeTable, boolean splitOnCaseChange, boolean splitOnNumerics, boolean stemEnglishPossessive) {
     this.charTypeTable = charTypeTable;
@@ -163,12 +163,12 @@ public final class WordDelimiterIterator {
 
     int type = charType(text[current]);
     switch (type) {
-    // return ALPHA word type for both lower and upper
-    case LOWER:
-    case UPPER:
-      return ALPHA;
-    default:
-      return type;
+      // return ALPHA word type for both lower and upper
+      case LOWER:
+      case UPPER:
+        return ALPHA;
+      default:
+        return type;
     }
   }
 
@@ -254,11 +254,11 @@ public final class WordDelimiterIterator {
    */
   private boolean endsWithPossessive(int pos) {
     return (stemEnglishPossessive &&
-        pos > 2 &&
-        text[pos - 2] == '\'' &&
-        (text[pos - 1] == 's' || text[pos - 1] == 'S') &&
-        isAlpha(charType(text[pos - 3])) &&
-        (pos == endBounds || isSubwordDelim(charType(text[pos]))));
+            pos > 2 &&
+            text[pos - 2] == '\'' &&
+            (text[pos - 1] == 's' || text[pos - 1] == 'S') &&
+            isAlpha(charType(text[pos - 3])) &&
+            (pos == endBounds || isSubwordDelim(charType(text[pos]))));
   }
 
   /**
@@ -282,21 +282,21 @@ public final class WordDelimiterIterator {
    */
   public static byte getType(int ch) {
     switch (Character.getType(ch)) {
-    case Character.UPPERCASE_LETTER: return UPPER;
-    case Character.LOWERCASE_LETTER: return LOWER;
+      case Character.UPPERCASE_LETTER: return UPPER;
+      case Character.LOWERCASE_LETTER: return LOWER;
 
-    case Character.TITLECASE_LETTER:
-    case Character.MODIFIER_LETTER:
-    case Character.OTHER_LETTER:
-    case Character.NON_SPACING_MARK:
-    case Character.ENCLOSING_MARK:  // depends what it encloses?
-    case Character.COMBINING_SPACING_MARK:
-      return ALPHA; 
+      case Character.TITLECASE_LETTER:
+      case Character.MODIFIER_LETTER:
+      case Character.OTHER_LETTER:
+      case Character.NON_SPACING_MARK:
+      case Character.ENCLOSING_MARK:  // depends what it encloses?
+      case Character.COMBINING_SPACING_MARK:
+        return ALPHA;
 
-    case Character.DECIMAL_DIGIT_NUMBER:
-    case Character.LETTER_NUMBER:
-    case Character.OTHER_NUMBER:
-      return DIGIT;
+      case Character.DECIMAL_DIGIT_NUMBER:
+      case Character.LETTER_NUMBER:
+      case Character.OTHER_NUMBER:
+        return DIGIT;
 
       // case Character.SPACE_SEPARATOR:
       // case Character.LINE_SEPARATOR:
@@ -305,8 +305,8 @@ public final class WordDelimiterIterator {
       // case Character.FORMAT:
       // case Character.PRIVATE_USE:
 
-    case Character.SURROGATE:  // prevent splitting
-      return ALPHA|DIGIT;  
+      case Character.SURROGATE:  // prevent splitting
+        return ALPHA|DIGIT;
 
       // case Character.DASH_PUNCTUATION:
       // case Character.START_PUNCTUATION:
@@ -320,7 +320,7 @@ public final class WordDelimiterIterator {
       // case Character.INITIAL_QUOTE_PUNCTUATION:
       // case Character.FINAL_QUOTE_PUNCTUATION:
 
-    default: return SUBWORD_DELIM;
+      default: return SUBWORD_DELIM;
     }
   }
 }
