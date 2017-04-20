@@ -6,7 +6,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.ElasticsearchException;
 
-public class WordDelimiterService extends AbstractLifecycleComponent<WordDelimiterService> {
+public class WordDelimiterService extends AbstractLifecycleComponent {
   public static final int WAIT_INTERVAL = 100;
   private final Thread syncWordsThread;
   private final WordDelimiterRunnable runnable;
