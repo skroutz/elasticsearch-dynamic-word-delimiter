@@ -4,7 +4,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.util.concurrent.AbstractRunnable;
-import org.elasticsearch.common.logging.ESLogger;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchType;
@@ -21,7 +21,7 @@ public class WordDelimiterRunnable extends AbstractRunnable {
   private final String index;
   private final long interval;
   private final String type;
-  private final ESLogger logger = ESLoggerFactory.getLogger(WordDelimiterRunnable.class.getSimpleName());
+  private static final Logger logger = ESLoggerFactory.getLogger(WordDelimiterRunnable.class.getSimpleName());
 
   public WordDelimiterRunnable(Client client, Settings settings) {
     this.client = client;

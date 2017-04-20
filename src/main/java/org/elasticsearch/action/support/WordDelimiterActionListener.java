@@ -3,7 +3,7 @@ package org.elasticsearch.action.support;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.common.logging.ESLogger;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.common.logging.ESLoggerFactory;
 
 import java.util.HashSet;
@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class WordDelimiterActionListener implements ActionListener<SearchResponse> {
   private static WordDelimiterActionListener instance = null;
-  private final ESLogger logger = ESLoggerFactory.getLogger(WordDelimiterActionListener.class.getSimpleName());
+  private static final Logger logger = ESLoggerFactory.getLogger(WordDelimiterActionListener.class.getSimpleName());
   private Set<String> protectedWords;
 
   protected WordDelimiterActionListener() {
