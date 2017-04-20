@@ -31,7 +31,8 @@ public class WordDelimiterActionListener implements ActionListener<SearchRespons
     protectedWords = localProtectedWords;
   }
 
-  public void onFailure(Throwable e) {
+  @Override
+  public void onFailure(Exception e) {
     logger.error(e.getMessage());
   }
 
