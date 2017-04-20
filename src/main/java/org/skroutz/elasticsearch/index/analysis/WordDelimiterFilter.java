@@ -17,25 +17,23 @@
 
 package org.skroutz.elasticsearch.index.analysis;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Set;
+
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
-import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.util.ArrayUtil;
 import org.apache.lucene.util.AttributeSource;
 import org.apache.lucene.util.InPlaceMergeSorter;
-import org.apache.lucene.util.RamUsageEstimator;
-import org.apache.lucene.util.Version;
 import org.elasticsearch.action.support.WordDelimiterActionListener;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Set;
 
 /**
  * Splits words into subwords and performs optional transformations on subword
@@ -58,7 +56,7 @@ import java.util.Set;
  * </ul>
  * </li>
  * </ul>
- * 
+ *
  * The <b>combinations</b> parameter affects how subwords are combined:
  * <ul>
  * <li>combinations="0" causes no subword combinations: <code>"PowerShot"</code>
@@ -69,7 +67,7 @@ import java.util.Set;
  * <ul>
  * <li><code>"PowerShot"</code> &#8594;
  * <code>0:"Power", 1:"Shot" 1:"PowerShot"</code></li>
- * <li><code>"A's+B's&C's"</code> -gt; <code>0:"A", 1:"B", 2:"C", 2:"ABC"</code>
+ * <li><code>"A's+B's&amp;C's"</code> &gt; <code>0:"A", 1:"B", 2:"C", 2:"ABC"</code>
  * </li>
  * <li><code>"Super-Duper-XL500-42-AutoCoder!"</code> &#8594;
  * <code>0:"Super", 1:"Duper", 2:"XL", 2:"SuperDuperXL", 3:"500" 4:"42", 5:"Auto", 6:"Coder", 6:"AutoCoder"</code>
@@ -99,43 +97,43 @@ public final class WordDelimiterFilter extends TokenFilter {
 
   /**
    * Causes parts of words to be generated:
-   * <p/>
-   * "PowerShot" => "Power" "Shot"
+   * <p>
+   * "PowerShot" =&gt; "Power" "Shot"
    */
   public static final int GENERATE_WORD_PARTS = 1;
 
   /**
    * Causes number subwords to be generated:
-   * <p/>
-   * "500-42" => "500" "42"
+   * <p>
+   * "500-42" =&gt; "500" "42"
    */
   public static final int GENERATE_NUMBER_PARTS = 2;
 
   /**
    * Causes maximum runs of word parts to be catenated:
-   * <p/>
-   * "wi-fi" => "wifi"
+   * <p>
+   * "wi-fi" =&gt; "wifi"
    */
   public static final int CATENATE_WORDS = 4;
 
   /**
    * Causes maximum runs of word parts to be catenated:
-   * <p/>
-   * "wi-fi" => "wifi"
+   * <p>
+   * "wi-fi" =&gt; "wifi"
    */
   public static final int CATENATE_NUMBERS = 8;
 
   /**
    * Causes all subword parts to be catenated:
-   * <p/>
-   * "wi-fi-4000" => "wifi4000"
+   * <p>
+   * "wi-fi-4000" =&gt; "wifi4000"
    */
   public static final int CATENATE_ALL = 16;
 
   /**
    * Causes original words are preserved and added to the subword list (Defaults to false)
-   * <p/>
-   * "500-42" => "500" "42" "500-42"
+   * <p>
+   * "500-42" =&gt; "500" "42" "500-42"
    */
   public static final int PRESERVE_ORIGINAL = 32;
 
@@ -153,8 +151,8 @@ public final class WordDelimiterFilter extends TokenFilter {
 
   /**
    * Causes trailing "'s" to be removed for each subword
-   * <p/>
-   * "O'Neil's" => "O", "Neil"
+   * <p>
+   * "O'Neil's" =&gt; "O", "Neil"
    */
   public static final int STEM_ENGLISH_POSSESSIVE = 256;
 
@@ -209,22 +207,11 @@ public final class WordDelimiterFilter extends TokenFilter {
    * @param protWords If not null is the set of tokens to protect from being delimited
    */
   public WordDelimiterFilter(TokenStream in, byte[] charTypeTable, int configurationFlags, CharArraySet protWords) {
-    this(Version.LATEST, in, charTypeTable, configurationFlags, protWords);
-  }
-
-  /**
-   * @deprecated Use {@link #WordDelimiterFilter(TokenStream, byte[], int, CharArraySet)}
-   */
-  @Deprecated
-  public WordDelimiterFilter(Version matchVersion, TokenStream in, byte[] charTypeTable, int configurationFlags, CharArraySet protWords) {
     super(in);
-    if (!matchVersion.onOrAfter(Version.LUCENE_4_8)) {
-      throw new IllegalArgumentException("This class only works with Lucene 4.8+. To emulate the old (broken) behavior of WordDelimiterFilter, use Lucene47WordDelimiterFilter");
-    }
     this.flags = configurationFlags;
     this.protWords = protWords;
     this.iterator = new WordDelimiterIterator(
-        charTypeTable, has(SPLIT_ON_CASE_CHANGE), has(SPLIT_ON_NUMERICS), has(STEM_ENGLISH_POSSESSIVE));
+            charTypeTable, has(SPLIT_ON_CASE_CHANGE), has(SPLIT_ON_NUMERICS), has(STEM_ENGLISH_POSSESSIVE));
   }
 
   /**
@@ -239,19 +226,10 @@ public final class WordDelimiterFilter extends TokenFilter {
     this(in, WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE, configurationFlags, protWords);
   }
 
-  /**
-   * @deprecated Use {@link #WordDelimiterFilter(TokenStream, int, CharArraySet)}
-   */
-  @Deprecated
-  public WordDelimiterFilter(Version matchVersion, TokenStream in, int configurationFlags, CharArraySet protWords) {
-    this(matchVersion, in, WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE, configurationFlags, protWords);
-  }
-
   @Override
   public boolean incrementToken() throws IOException {
     WordDelimiterActionListener wordsListener = WordDelimiterActionListener.getInstance();
     Set<String> protectedWords = wordsListener.getProtectedWords();
-
     while (true) {
       if (!hasSavedState) {
         // process a new input word
@@ -269,8 +247,8 @@ public final class WordDelimiterFilter extends TokenFilter {
 
         // word of no delimiters, or protected word: just return it
         if ((iterator.current == 0 && iterator.end == termLength) ||
-            (protWords != null && protWords.contains(termBuffer, 0, termLength)) ||
-            protectedWords.contains(termAttribute.toString())) {
+                (protWords != null && protWords.contains(termBuffer, 0, termLength))
+                || protectedWords.contains(termAttribute.toString())) {
           posIncAttribute.setPositionIncrement(accumPosInc);
           accumPosInc = 0;
           first = false;
@@ -456,7 +434,7 @@ public final class WordDelimiterFilter extends TokenFilter {
     savedType = typeAttribute.type();
 
     if (savedBuffer.length < termAttribute.length()) {
-      savedBuffer = new char[ArrayUtil.oversize(termAttribute.length(), RamUsageEstimator.NUM_BYTES_CHAR)];
+      savedBuffer = new char[ArrayUtil.oversize(termAttribute.length(), Character.BYTES)];
     }
 
     System.arraycopy(termAttribute.buffer(), 0, savedBuffer, 0, termAttribute.length());
@@ -527,7 +505,7 @@ public final class WordDelimiterFilter extends TokenFilter {
     int endOffset = savedStartOffset + iterator.end;
 
     if (hasIllegalOffsets) {
-      // historically this filter did this regardless for 'isSingleWord', 
+      // historically this filter did this regardless for 'isSingleWord',
       // but we must do a sanity check:
       if (isSingleWord && startOffset <= savedEndOffset) {
         offsetAttribute.setOffset(startOffset, savedEndOffset);
