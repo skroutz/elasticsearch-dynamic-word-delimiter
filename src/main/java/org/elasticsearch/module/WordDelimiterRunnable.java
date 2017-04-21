@@ -14,7 +14,7 @@ public class WordDelimiterRunnable extends AbstractRunnable {
   public static final TimeValue REFRESH_INTERVAL = TimeValue.timeValueMinutes(5);
   public static final String INDEX_NAME = "protected_words";
   public static final String INDEX_TYPE = "word";
-  public static final int RESULTS_SIZE = 150000;
+  public static final int RESULTS_SIZE = 10000;
 
   private volatile boolean running;
   private final Client client;
