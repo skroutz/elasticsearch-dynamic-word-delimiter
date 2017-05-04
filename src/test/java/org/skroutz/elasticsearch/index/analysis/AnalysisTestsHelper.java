@@ -19,39 +19,26 @@
 
 package org.skroutz.elasticsearch.index.analysis;
 
-import org.elasticsearch.index.analysis.TokenFilterFactory;
-import org.elasticsearch.common.inject.Injector;
-import org.elasticsearch.common.inject.ModulesBuilder;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.settings.SettingsModule;
-import org.elasticsearch.env.Environment;
-import org.elasticsearch.env.EnvironmentModule;
 import org.elasticsearch.index.Index;
-import org.elasticsearch.index.IndexNameModule;
-import org.elasticsearch.index.settings.IndexSettingsModule;
-import org.elasticsearch.index.analysis.AnalysisService;
-import org.elasticsearch.index.analysis.AnalysisModule;
-import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
-import org.elasticsearch.indices.analysis.IndicesAnalysisService;
+import org.elasticsearch.index.analysis.TokenFilterFactory;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.plugin.WordDelimiterPlugin;
+
+import static org.elasticsearch.test.ESTestCase.TestAnalysis;
+
+import java.io.IOException;
+
+import static org.elasticsearch.test.ESTestCase.createTestAnalysis;
 
 public class AnalysisTestsHelper {
 
-  public static TokenFilterFactory filterFactory(Settings indexSettings, String filterName) {
-    Index index = new Index("test");
+  public static TokenFilterFactory filterFactory(Settings indexSettings, String filterName) throws IOException {
 
-    Injector parentInjector = new ModulesBuilder()
-        .add(new SettingsModule(indexSettings),
-            new EnvironmentModule(new Environment(indexSettings)),
-            new IndicesAnalysisModule()).createInjector();
-    Injector injector = new ModulesBuilder()
-        .add(new IndexSettingsModule(index, indexSettings),
-            new IndexNameModule(index),
-            new AnalysisModule(indexSettings,
-                parentInjector.getInstance(IndicesAnalysisService.class))
-            .addProcessor(new WordDelimiterBinderProcessor()))
-        .createChildInjector(parentInjector);
+      TestAnalysis analysis = createTestAnalysis(new Index("test", "_na_"),
+              indexSettings, new WordDelimiterPlugin());
 
-    AnalysisService analysisService = injector.getInstance(AnalysisService.class);
-    return analysisService.tokenFilter(filterName);
+      TokenFilterFactory filterFactory = analysis.tokenFilter.get(filterName);
+
+      return filterFactory;
   }
 }
