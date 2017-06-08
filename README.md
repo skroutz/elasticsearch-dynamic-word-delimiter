@@ -20,10 +20,6 @@ Note: The `protected_words` setting described in the reference above is still
 respected from the filter and can be used simultaneously with the dynamically
 defined words.
 
-In order to install the latest version of the plugin, simply run:
-
-    bin/plugin -install gr.skroutz/elasticsearch-dynamic-word-delimiter/1.0.1
-
 Versions
 ---------
 
@@ -32,6 +28,25 @@ Dynamic Word Delimiter Plugin | ElasticSearch | Branch |
 5.4.0.1                       | 5.4.0         | 5.4.0  |
 1.0.1                         | 1.5.2         | 1.5.2  |
 1.0.0                         | 1.5.2         | 1.5.2  |
+
+Installation
+-------------
+
+To list all plugins in current installation:
+
+    sudo bin/elasticsearch-plugin list
+
+In order to install the latest version of the plugin, simply run:
+
+    sudo bin/elasticsearch-plugin install gr.skroutz:elasticsearch-dynamic-word-delimiter:5.4.0.1
+
+In order to install the latest version of the plugin, simply run:
+
+    sudo bin/plugin -install gr.skroutz/elasticsearch-dynamic-word-delimiter/1.0.1
+
+To remove a plugin (5.x.x):
+
+    sudo bin/elasticsearch-plugin remove <plugin_name>
 
 ### YML configuration example
 
