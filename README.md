@@ -25,6 +25,7 @@ Versions
 
 Dynamic Word Delimiter Plugin | ElasticSearch | Branch |
 ------------------------------|---------------|--------|
+5.4.2.1                       | 5.4.2         | 5.4.2  |
 5.4.0.1                       | 5.4.0         | 5.4.0  |
 1.0.1                         | 1.5.2         | 1.5.2  |
 1.0.0                         | 1.5.2         | 1.5.2  |
@@ -38,9 +39,9 @@ To list all plugins in current installation:
 
 In order to install the latest version of the plugin, simply run:
 
-    sudo bin/elasticsearch-plugin install gr.skroutz:elasticsearch-dynamic-word-delimiter:5.4.0.1
+    sudo bin/elasticsearch-plugin install gr.skroutz:elasticsearch-dynamic-word-delimiter:5.4.2.1
 
-In order to install the latest version of the plugin, simply run:
+In order to install a previous (1.x.x) version of the plugin, simply run:
 
     sudo bin/plugin -install gr.skroutz/elasticsearch-dynamic-word-delimiter/1.0.1
 
@@ -242,4 +243,3 @@ before the `lowercase` filter.
 ## License
 
 elasticsearch-dynamic-word-delimiter is licensed under the Apache Software License, Version 2.0.
-
