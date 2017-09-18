@@ -246,9 +246,11 @@ public final class WordDelimiterFilter extends TokenFilter {
         iterator.next();
 
         // word of no delimiters, or protected word: just return it
-        if ((iterator.current == 0 && iterator.end == termLength) ||
-                (protWords != null && protWords.contains(termBuffer, 0, termLength))
-                || protectedWords.contains(termAttribute.toString())) {
+        if ((termAttribute.length() == 2 && isAlphaNumeric(Arrays
+                .copyOfRange(termBuffer, 0, termLength))
+                || (iterator.current == 0 && iterator.end == termLength)
+                || (protWords != null && protWords.contains(termBuffer, 0, termLength))
+                || protectedWords.contains(termAttribute.toString()))) {
           posIncAttribute.setPositionIncrement(accumPosInc);
           accumPosInc = 0;
           first = false;
@@ -593,6 +595,15 @@ public final class WordDelimiterFilter extends TokenFilter {
    */
   private boolean has(int flag) {
     return (flags & flag) != 0;
+  }
+
+  private boolean isAlphaNumeric(char[] charArr) {
+    for(char c : charArr) {
+      if(!Character.isLetterOrDigit(c)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   // ================================================= Inner Classes =================================================
