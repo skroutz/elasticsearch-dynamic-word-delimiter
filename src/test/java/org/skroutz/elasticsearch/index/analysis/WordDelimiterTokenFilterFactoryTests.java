@@ -117,7 +117,6 @@ public class WordDelimiterTokenFilterFactoryTests extends ESTokenStreamTestCase 
     String[] expected = new String[]{"PowerShot"};
     Tokenizer tokenizer = new WhitespaceTokenizer();
     tokenizer.setReader(new StringReader(source));
-    tokenizer.setReader(new StringReader(source));
     assertTokenStreamContents(filterFactory.create(tokenizer), expected);
   }
 
@@ -151,7 +150,7 @@ public class WordDelimiterTokenFilterFactoryTests extends ESTokenStreamTestCase 
             "j2se O'Neil's");
     String[] expected = new String[]{"Power", "Shot", "500", "42", "wi", "fi", "wi", "fi", "4000", "j", "2", "se", "O", "Neil", "s"};
     Tokenizer tokenizer = new WhitespaceTokenizer();
-      tokenizer.setReader(source);
+    tokenizer.setReader(source);
     assertTokenStreamContents(filterFactory.create(tokenizer), expected);
   }
 
@@ -170,7 +169,6 @@ public class WordDelimiterTokenFilterFactoryTests extends ESTokenStreamTestCase 
     String[] expected = new String[]{"Power", "PowerShot", "Shot" };
     Tokenizer tokenizer = new WhitespaceTokenizer();
     tokenizer.setReader(source);
-
     assertTokenStreamContents(filterFactory.create(tokenizer), expected);
   }
 
