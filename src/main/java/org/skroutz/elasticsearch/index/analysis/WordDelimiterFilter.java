@@ -197,6 +197,7 @@ public final class WordDelimiterFilter extends TokenFilter {
   // when preserve original is on, have we output any token following it?
   // this token must have posInc=0!
   private boolean hasOutputFollowingOriginal = false;
+  private int minSplitLength;
 
   /**
    * Creates a new WordDelimiterFilter
@@ -206,12 +207,14 @@ public final class WordDelimiterFilter extends TokenFilter {
    * @param configurationFlags Flags configuring the filter
    * @param protWords If not null is the set of tokens to protect from being delimited
    */
-  public WordDelimiterFilter(TokenStream in, byte[] charTypeTable, int configurationFlags, CharArraySet protWords) {
+  public WordDelimiterFilter(TokenStream in, byte[] charTypeTable, int
+          configurationFlags, CharArraySet protWords, int minSplitLength) {
     super(in);
     this.flags = configurationFlags;
     this.protWords = protWords;
     this.iterator = new WordDelimiterIterator(
             charTypeTable, has(SPLIT_ON_CASE_CHANGE), has(SPLIT_ON_NUMERICS), has(STEM_ENGLISH_POSSESSIVE));
+    this.minSplitLength = minSplitLength;
   }
 
   /**
@@ -222,8 +225,10 @@ public final class WordDelimiterFilter extends TokenFilter {
    * @param configurationFlags Flags configuring the filter
    * @param protWords If not null is the set of tokens to protect from being delimited
    */
-  public WordDelimiterFilter(TokenStream in, int configurationFlags, CharArraySet protWords) {
-    this(in, WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE, configurationFlags, protWords);
+  public WordDelimiterFilter(TokenStream in, int configurationFlags,
+                             CharArraySet protWords, int minSplitLength) {
+    this(in, WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE,
+            configurationFlags, protWords, minSplitLength);
   }
 
   @Override
@@ -246,9 +251,9 @@ public final class WordDelimiterFilter extends TokenFilter {
         iterator.next();
 
         // word of no delimiters, or protected word: just return it
-        if ((termAttribute.length() == 2 && isAlphaNumeric(Arrays
-                .copyOfRange(termBuffer, 0, termLength))
-                || (iterator.current == 0 && iterator.end == termLength)
+        if ((iterator.current == 0 && iterator.end == termLength) ||
+                (termLength <= minSplitLength && isAlphaNumeric(Arrays
+                        .copyOfRange(termBuffer, 0, termLength))
                 || (protWords != null && protWords.contains(termBuffer, 0, termLength))
                 || protectedWords.contains(termAttribute.toString()))) {
           posIncAttribute.setPositionIncrement(accumPosInc);

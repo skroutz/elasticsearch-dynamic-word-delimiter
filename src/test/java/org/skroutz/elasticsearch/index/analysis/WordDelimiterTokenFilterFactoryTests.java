@@ -172,28 +172,33 @@ public class WordDelimiterTokenFilterFactoryTests extends ESTokenStreamTestCase 
     assertTokenStreamContents(filterFactory.create(tokenizer), expected);
   }
 
-  // Test that it doesn't split a 2-chars string
+  // Test that it doesn't split a 3-chars (or less) string
   public void testTwoChars() throws IOException {
     Settings indexSettings = Settings.builder()
             .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
             .put(Environment.PATH_HOME_SETTING.getKey(), createTempDir().toString())
             .put("index.analysis.filter.my_word_delimiter.type", TYPE_NAME)
             .put("index.analysis.filter.my_word_delimiter.split_on_numerics", true)
-            .put("index.analysis.filter.my_word_delimiter.split_on_case_change", "true")
+            .put("index.analysis.filter.my_word_delimiter.min_split_length", 3)
+            .put("index.analysis.filter.my_word_delimiter.split_on_case_change", true)
             .build();
     TokenFilterFactory filterFactory = filterFactory(indexSettings, FILTER_NAME);
 
     String alphanum = "b1";
     String greek = "α4";
+    String lengthThree = "p5k";
     String nonAlphanum = "a.";
     String[] expectedAlphanum = new String[]{"b1"};
     String[] expectedGreek = new String[]{"α4"};
+    String[] expectedLengthThree = new String[]{"p5k"};
     String[] expectedNonAlphanum = new String[]{"a"};
     Tokenizer tokenizer = new WhitespaceTokenizer();
     tokenizer.setReader(new StringReader(alphanum));
     assertTokenStreamContents(filterFactory.create(tokenizer), expectedAlphanum);
     tokenizer.setReader(new StringReader(greek));
     assertTokenStreamContents(filterFactory.create(tokenizer), expectedGreek);
+    tokenizer.setReader(new StringReader(lengthThree));
+    assertTokenStreamContents(filterFactory.create(tokenizer), expectedLengthThree);
     tokenizer.setReader(new StringReader(nonAlphanum));
     assertTokenStreamContents(filterFactory.create(tokenizer), expectedNonAlphanum);
   }

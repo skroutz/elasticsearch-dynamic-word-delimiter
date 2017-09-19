@@ -50,6 +50,7 @@ public class WordDelimiterTokenFilterFactory extends AbstractTokenFilterFactory 
     private final byte[] charTypeTable;
     private final int flags;
     private final CharArraySet protoWords;
+    private final int minSplitLength;
 
     public WordDelimiterTokenFilterFactory(IndexSettings indexSettings, Environment env, String name, Settings settings) {
         super(indexSettings, name, settings);
@@ -89,6 +90,7 @@ public class WordDelimiterTokenFilterFactory extends AbstractTokenFilterFactory 
         Set<?> protectedWords = Analysis.getWordSet(env, settings, "protected_words");
         this.protoWords = protectedWords == null ? null : CharArraySet.copy(protectedWords);
         this.flags = flags;
+        this.minSplitLength = settings.getAsInt("min_split_length", 2);
     }
 
     @Override
@@ -96,7 +98,8 @@ public class WordDelimiterTokenFilterFactory extends AbstractTokenFilterFactory 
         return new WordDelimiterFilter(tokenStream,
                 charTypeTable,
                 flags,
-                protoWords);
+                protoWords,
+                minSplitLength);
     }
 
     public int getFlag(int flag, Settings settings, String key, boolean defaultValue) {
