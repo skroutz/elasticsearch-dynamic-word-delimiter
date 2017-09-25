@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>gr.skroutz</groupId>
 	<artifactId>elasticsearch-dynamic-word-delimiter</artifactId>
-	<version>5.4.2.2-SNAPSHOT</version>
+	<version>5.4.2.2</version>
 	<description>Dynamic word delimiter token filter for ElasticSearch</description>
 	<inceptionYear>2015</inceptionYear>
 
