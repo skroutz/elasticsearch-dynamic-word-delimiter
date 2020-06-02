@@ -37,8 +37,6 @@ public class AnalysisTestsHelper {
       TestAnalysis analysis = createTestAnalysis(new Index("test", "_na_"),
               indexSettings, new WordDelimiterPlugin());
 
-      TokenFilterFactory filterFactory = analysis.tokenFilter.get(filterName);
-
-      return filterFactory;
+      return analysis.tokenFilter.get(filterName);
   }
 }

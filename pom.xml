@@ -19,10 +19,10 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<elasticsearch.version>5.4.2</elasticsearch.version>
+		<elasticsearch.version>7.7.0</elasticsearch.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<lucene.version>6.5.1</lucene.version>
+		<lucene.version>8.5.1</lucene.version>
 	</properties>
 
 	<developers>
@@ -60,7 +60,7 @@
 		<dependency>
 			<groupId>com.carrotsearch.randomizedtesting</groupId>
 			<artifactId>randomizedtesting-runner</artifactId>
-			<version>2.4.0</version>
+			<version>2.7.7</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -82,7 +82,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>4.12</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -108,15 +108,15 @@
 
 		<dependency>
 			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-all</artifactId>
-			<version>1.3</version>
+			<artifactId>hamcrest-core</artifactId>
+			<version>2.1</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.6</version>
+			<version>2.11.1</version>
 		</dependency>
 	</dependencies>
 

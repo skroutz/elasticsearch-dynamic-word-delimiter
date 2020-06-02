@@ -13,7 +13,6 @@ public class WordDelimiterService extends AbstractLifecycleComponent {
 
   @Inject
   public WordDelimiterService(Settings settings, Client client) {
-    super(settings);
     runnable = new WordDelimiterRunnable(client, settings);
     syncWordsThread = new Thread(runnable);
   }

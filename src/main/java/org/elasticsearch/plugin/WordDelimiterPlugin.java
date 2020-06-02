@@ -16,8 +16,7 @@ import org.skroutz.elasticsearch.index.analysis.WordDelimiterTokenFilterFactory;
 
 public class WordDelimiterPlugin extends Plugin implements AnalysisPlugin {
 
-  private final Collection<Class<? extends LifecycleComponent>> services =
-          new ArrayList();
+  private final Collection<Class<? extends LifecycleComponent>> services = new ArrayList<>();
 
   public WordDelimiterPlugin() {
     services.add(WordDelimiterService.class);
@@ -36,25 +35,17 @@ public class WordDelimiterPlugin extends Plugin implements AnalysisPlugin {
 
   @Override
   public List<Setting<?>> getSettings() {
-
-    List<Setting<?>> settings = Arrays.asList(
-            new Setting<>(
-                    "plugin.dynamic_word_delimiter.protected_words_index",
-                    WordDelimiterRunnable.INDEX_NAME,
-                    Function.identity(),
-                    Setting.Property.NodeScope),
-            new Setting<>(
-                    "plugin.dynamic_word_delimiter.protected_words_type",
-                    WordDelimiterRunnable.INDEX_TYPE,
-                    Function.identity(),
-                    Setting.Property.NodeScope),
-            Setting.timeSetting(
-                    "plugin.dynamic_word_delimiter.refresh_interval",
-                    WordDelimiterRunnable.REFRESH_INTERVAL,
-                    Setting.Property.NodeScope)
+    return Arrays.asList(
+      new Setting<>(
+        "plugin.dynamic_word_delimiter.protected_words_index",
+        WordDelimiterRunnable.INDEX_NAME,
+        Function.identity(),
+        Setting.Property.NodeScope),
+      Setting.timeSetting(
+        "plugin.dynamic_word_delimiter.refresh_interval",
+        WordDelimiterRunnable.REFRESH_INTERVAL,
+        Setting.Property.NodeScope)
     );
-
-    return settings;
   }
 
 }

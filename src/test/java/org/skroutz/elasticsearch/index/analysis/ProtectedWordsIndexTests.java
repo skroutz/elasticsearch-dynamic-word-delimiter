@@ -1,6 +1,10 @@
 package org.skroutz.elasticsearch.index.analysis;
 
 import org.elasticsearch.Version;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.settings.Settings;
 import org.apache.lucene.analysis.Tokenizer;
@@ -28,7 +32,6 @@ import java.util.Set;
 public class ProtectedWordsIndexTests extends ESIntegTestCase {
   private final WordDelimiterActionListener wordsListener = WordDelimiterActionListener.getInstance();
   private final static String INDEX_NAME = "protected_words";
-  private final static String TYPE_NAME = "word";
   private final static String FILTER_NAME = "my_word_delimiter";
 
   @Override
@@ -53,14 +56,16 @@ public class ProtectedWordsIndexTests extends ESIntegTestCase {
 
     createIndex(INDEX_NAME);
     ensureGreen();
-    client().prepareIndex(INDEX_NAME, TYPE_NAME, "1")
-            .setSource("word", "1tb")
-            .execute();
+    client().index(new IndexRequest().
+            setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).
+            index(INDEX_NAME).
+            id("1").
+            source("word", "1tb")).get();
 
     Thread.sleep(TimeValue.timeValueSeconds(2).getMillis());
 
     Set<String> protectedWords = wordsListener.getProtectedWords();
-    assertTrue(protectedWords.size() == 1);
+    assertEquals(1, protectedWords.size());
 
     String source = "skliros 1tb";
     String[] expected = new String[]{"skliros", "1tb"};
@@ -78,12 +83,15 @@ public class ProtectedWordsIndexTests extends ESIntegTestCase {
 
     createIndex(INDEX_NAME);
     ensureGreen();
-    client().prepareIndex(INDEX_NAME, TYPE_NAME, "1").setSource("word", "1tb").execute();
+    IndexResponse indexed = client().index(new IndexRequest().
+            setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).
+            index(INDEX_NAME).
+            source("word", "1tb")).get();
 
     Thread.sleep(TimeValue.timeValueSeconds(2).getMillis());
 
     Set<String> protectedWords = wordsListener.getProtectedWords();
-    assertTrue(protectedWords.size() == 1);
+    assertEquals(1, protectedWords.size());
 
     String source = "skliros 1tb";
     String[] expected = new String[]{"skliros", "1tb"};
@@ -91,9 +99,10 @@ public class ProtectedWordsIndexTests extends ESIntegTestCase {
     tokenizer.setReader(new StringReader(source));
     assertTokenStreamContents(filterFactory.create(tokenizer), expected);
 
-    client().prepareDelete(INDEX_NAME, TYPE_NAME, "1")
-            .execute()
-            .actionGet();
+    client().delete(new DeleteRequest().
+            setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).
+            index(INDEX_NAME).
+            id(indexed.getId())).get();
 
     Thread.sleep(TimeValue.timeValueSeconds(2).getMillis());
 
