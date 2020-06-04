@@ -25,6 +25,7 @@ Versions
 
 Dynamic Word Delimiter Plugin | ElasticSearch | Branch |
 ------------------------------|---------------|--------|
+7.7.0.1                       | 7.7.0         | 7.7.0  |
 5.4.2.2                       | 5.4.2         | 5.4.2  |
 5.4.2.1                       | 5.4.2         | 5.4.2  |
 5.4.0.1                       | 5.4.0         | 5.4.0  |
@@ -38,15 +39,11 @@ To list all plugins in current installation:
 
     sudo bin/elasticsearch-plugin list
 
-In order to install the latest version of the plugin, simply run:
+In order to install the the appropriate version of the plugin, simply run:
 
-    sudo bin/elasticsearch-plugin install gr.skroutz:elasticsearch-dynamic-word-delimiter:5.4.2.2
+    sudo bin/elasticsearch-plugin install gr.skroutz:elasticsearch-dynamic-word-delimiter:<plugin-version>
 
-In order to install a previous (1.x.x) version of the plugin, simply run:
-
-    sudo bin/plugin -install gr.skroutz/elasticsearch-dynamic-word-delimiter/1.0.1
-
-To remove a plugin (5.x.x):
+To remove the plugin:
 
     sudo bin/elasticsearch-plugin remove <plugin_name>
 
@@ -55,7 +52,7 @@ To remove a plugin (5.x.x):
 There are three available settings that you can override:
 
 - `protected_words_index` (index name),
-- `protected_words_type` (index type),
+- `protected_words_type` (index type) **obsolete for the 7.x versions**,
 - `refresh_interval` (interval for updating the list of dynamic protected words)
 
 Add the settings below in your `elasticsearch.yml` config file.
@@ -71,162 +68,166 @@ be out of sync for the maximum amount in `refresh_interval`.
 
 Example Usage
 -------------
+
+> This example shows usages for versions prior to 7.x, as ES7 removes the concept of types.
+> To run this example on ES7, replace the `word` type with `_doc`.
+
 ```bash
-    # Create the protected_words index
-    $ curl -XPUT 'http://localhost:9200/protected_words/'
-    {"acknowledged":true}
+# Create the protected_words index
+$ curl -XPUT 'http://localhost:9200/protected_words/'
+{"acknowledged":true}
 
-    # Index a few protected words (view the Notes section on why we index both lowercase/uppercase form)
-    $ curl -XPOST 'http://localhost:9200/protected_words/word' -d '{"word": "4g"}'
-    {"_index":"protected_words","_type":"word","_id":"AViHOwEsHo94o8jBG6vN","_version":1,"created":true}
+# Index a few protected words (view the Notes section on why we index both lowercase/uppercase form)
+$ curl -XPOST 'http://localhost:9200/protected_words/word' -d '{"word": "4g"}'
+{"_index":"protected_words","_type":"word","_id":"AViHOwEsHo94o8jBG6vN","_version":1,"created":true}
 
-    $ curl -XPOST 'http://localhost:9200/protected_words/word' -d '{"word": "4G"}'
-    {"_index":"protected_words","_type":"word","_id":"AViHO5pxHo94o8jBG6vO","_version":1,"created":true}
+$ curl -XPOST 'http://localhost:9200/protected_words/word' -d '{"word": "4G"}'
+{"_index":"protected_words","_type":"word","_id":"AViHO5pxHo94o8jBG6vO","_version":1,"created":true}
 
-    # View the documents on our index
-    $ curl 'http://localhost:9200/protected_words/word/_search?pretty=true' -d '{"query": {"match_all": {}}}'
-    {
-      "took" : 1,
-      "timed_out" : false,
-      "_shards" : {
-        "total" : 1,
-        "successful" : 1,
-        "failed" : 0
+# View the documents on our index
+$ curl 'http://localhost:9200/protected_words/word/_search?pretty=true' -d '{"query": {"match_all": {}}}'
+{
+  "took" : 1,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 2,
+    "max_score" : 1.0,
+    "hits" : [ {
+      "_index" : "protected_words",
+      "_type" : "word",
+      "_id" : "AViHOwEsHo94o8jBG6vN",
+      "_score" : 1.0,
+      "_source":{"word": "4g"}
+    }, {
+      "_index" : "protected_words",
+      "_type" : "word",
+      "_id" : "AViHO5pxHo94o8jBG6vO",
+      "_score" : 1.0,
+      "_source":{"word": "4G"}
+    } ]
+  }
+}
+
+# Create a test index with the new dynamic word delimiter filter
+$ curl -XPUT 'http://localhost:9200/test_index' -d '{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "query_analyzer": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": ["query_splitter"]
+        }
       },
-      "hits" : {
-        "total" : 2,
-        "max_score" : 1.0,
-        "hits" : [ {
-          "_index" : "protected_words",
-          "_type" : "word",
-          "_id" : "AViHOwEsHo94o8jBG6vN",
-          "_score" : 1.0,
-          "_source":{"word": "4g"}
-        }, {
-          "_index" : "protected_words",
-          "_type" : "word",
-          "_id" : "AViHO5pxHo94o8jBG6vO",
-          "_score" : 1.0,
-          "_source":{"word": "4G"}
-        } ]
-      }
-    }
-
-    # Create a test index with the new dynamic word delimiter filter
-    $ curl -XPUT 'http://localhost:9200/test_index' -d '{
-      "settings": {
-        "analysis": {
-          "analyzer": {
-            "query_analyzer": {
-              "type": "custom",
-              "tokenizer": "standard",
-              "filter": ["query_splitter"]
-            }
-          },
-          "filter": {
-            "query_splitter": {
-              "type": "dynamic_word_delimiter",
-              "generate_word_parts": true,
-              "generate_number_parts": true,
-              "catenate_words": false,
-              "catenate_numbers": false,
-              "catenate_all": false,
-              "preserve_original": false,
-              "split_on_case_change": false,
-              "split_on_numerics": true,
-              "stem_english_possesive": true
-            }
-          }
+      "filter": {
+        "query_splitter": {
+          "type": "dynamic_word_delimiter",
+          "generate_word_parts": true,
+          "generate_number_parts": true,
+          "catenate_words": false,
+          "catenate_numbers": false,
+          "catenate_all": false,
+          "preserve_original": false,
+          "split_on_case_change": false,
+          "split_on_numerics": true,
+          "stem_english_possesive": true
         }
       }
-    }'
-    {"acknowledged":true}
-
-    # Test token filter
-
-    # Output before indexing '4g'
-    $ curl 'http://localhost:9200/test_index/_analyze?analyzer=query_analyzer&pretty=true' -d '4g connection'
-    {
-      "tokens" : [ {
-        "token" : "4",
-        "start_offset" : 0,
-        "end_offset" : 1,
-        "type" : "<ALPHANUM>",
-        "position" : 1
-      }, {
-        "token" : "g",
-        "start_offset" : 1,
-        "end_offset" : 2,
-        "type" : "<ALPHANUM>",
-        "position" : 2
-      }, {
-        "token" : "connection",
-        "start_offset" : 3,
-        "end_offset" : 13,
-        "type" : "<ALPHANUM>",
-        "position" : 3
-        } ]
     }
+  }
+}'
+{"acknowledged":true}
 
-    # Output after indexing '4g' as a protected word
-    $ curl 'http://localhost:9200/test_index/_analyze?analyzer=query_analyzer&pretty=true' -d '4g connection'
-    {
-      "tokens" : [ {
-        "token" : "4g",
-        "start_offset" : 0,
-        "end_offset" : 2,
-        "type" : "<ALPHANUM>",
-        "position" : 1
-      }, {
-        "token" : "connection",
-        "start_offset" : 3,
-        "end_offset" : 13,
-        "type" : "<ALPHANUM>",
-        "position" : 2
-        } ]
-    }
+# Test token filter
 
-    # Output before indexing '4G'
-    $ curl 'http://localhost:9200/test_index/_analyze?analyzer=query_analyzer&pretty=true' -d 'router 4G'
-    {
-      "tokens" : [ {
-        "token" : "router",
-        "start_offset" : 0,
-        "end_offset" : 6,
-        "type" : "<ALPHANUM>",
-        "position" : 1
-      }, {
-        "token" : "4",
-        "start_offset" : 7,
-        "end_offset" : 8,
-        "type" : "<ALPHANUM>",
-        "position" : 2
-      }, {
-        "token" : "G",
-        "start_offset" : 8,
-        "end_offset" : 9,
-        "type" : "<ALPHANUM>",
-        "position" : 3
-      } ]
-    }
+# Output before indexing '4g'
+$ curl 'http://localhost:9200/test_index/_analyze?analyzer=query_analyzer&pretty=true' -d '4g connection'
+{
+  "tokens" : [ {
+    "token" : "4",
+    "start_offset" : 0,
+    "end_offset" : 1,
+    "type" : "<ALPHANUM>",
+    "position" : 1
+  }, {
+    "token" : "g",
+    "start_offset" : 1,
+    "end_offset" : 2,
+    "type" : "<ALPHANUM>",
+    "position" : 2
+  }, {
+    "token" : "connection",
+    "start_offset" : 3,
+    "end_offset" : 13,
+    "type" : "<ALPHANUM>",
+    "position" : 3
+    } ]
+}
 
-    # Output after indexing '4G' as a protected word
-    $ curl 'http://localhost:9200/test_index/_analyze?analyzer=query_analyzer&pretty=true' -d 'router 4G'
-    {
-      "tokens" : [ {
-        "token" : "router",
-        "start_offset" : 0,
-        "end_offset" : 6,
-        "type" : "<ALPHANUM>",
-        "position" : 1
-      }, {
-        "token" : "4G",
-        "start_offset" : 7,
-        "end_offset" : 9,
-        "type" : "<ALPHANUM>",
-        "position" : 2
-        } ]
-    }
+# Output after indexing '4g' as a protected word
+$ curl 'http://localhost:9200/test_index/_analyze?analyzer=query_analyzer&pretty=true' -d '4g connection'
+{
+  "tokens" : [ {
+    "token" : "4g",
+    "start_offset" : 0,
+    "end_offset" : 2,
+    "type" : "<ALPHANUM>",
+    "position" : 1
+  }, {
+    "token" : "connection",
+    "start_offset" : 3,
+    "end_offset" : 13,
+    "type" : "<ALPHANUM>",
+    "position" : 2
+    } ]
+}
+
+# Output before indexing '4G'
+$ curl 'http://localhost:9200/test_index/_analyze?analyzer=query_analyzer&pretty=true' -d 'router 4G'
+{
+  "tokens" : [ {
+    "token" : "router",
+    "start_offset" : 0,
+    "end_offset" : 6,
+    "type" : "<ALPHANUM>",
+    "position" : 1
+  }, {
+    "token" : "4",
+    "start_offset" : 7,
+    "end_offset" : 8,
+    "type" : "<ALPHANUM>",
+    "position" : 2
+  }, {
+    "token" : "G",
+    "start_offset" : 8,
+    "end_offset" : 9,
+    "type" : "<ALPHANUM>",
+    "position" : 3
+  } ]
+}
+
+# Output after indexing '4G' as a protected word
+$ curl 'http://localhost:9200/test_index/_analyze?analyzer=query_analyzer&pretty=true' -d 'router 4G'
+{
+  "tokens" : [ {
+    "token" : "router",
+    "start_offset" : 0,
+    "end_offset" : 6,
+    "type" : "<ALPHANUM>",
+    "position" : 1
+  }, {
+    "token" : "4G",
+    "start_offset" : 7,
+    "end_offset" : 9,
+    "type" : "<ALPHANUM>",
+    "position" : 2
+    } ]
+}
 ```
 
 Notes
@@ -240,6 +241,8 @@ before the `lowercase` filter.
 
 * [Bill Kolokithas](https://github.com/freestyl3r)
 * [Peter Markou](https://github.com/m-Peter)
+* [Spyridon Pagkalos](https://github.com/enderian)
+* [Panagiotis Theofilopoulos](https://github.com/ptheof)
 
 ## License
 
