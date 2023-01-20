@@ -24,6 +24,7 @@ import java.util.Set;
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.KeywordAttribute;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -199,6 +200,7 @@ public final class WordDelimiterFilter extends TokenFilter {
   private boolean hasOutputFollowingOriginal = false;
   private int minSplitLength;
 
+  private final KeywordAttribute keywordAtt = addAttribute(KeywordAttribute.class);
   /**
    * Creates a new WordDelimiterFilter
    *
@@ -250,15 +252,22 @@ public final class WordDelimiterFilter extends TokenFilter {
         iterator.setText(termBuffer, termLength);
         iterator.next();
 
-        // word of no delimiters, or protected word: just return it
-        if ((iterator.current == 0 && iterator.end == termLength) ||
-                (termLength <= minSplitLength && isAlphaNumeric(Arrays
-                        .copyOfRange(termBuffer, 0, termLength))
-                || (protWords != null && protWords.contains(termBuffer, 0, termLength))
-                || protectedWords.contains(termAttribute.toString()))) {
+        if ((protWords != null && protWords.contains(termBuffer, 0, termLength)) ||
+                   protectedWords.contains(termAttribute.toString())) {
           posIncAttribute.setPositionIncrement(accumPosInc);
           accumPosInc = 0;
           first = false;
+
+          keywordAtt.setKeyword(true);
+
+          return true;
+        } else if (iterator.current == 0 && iterator.end == termLength ||
+            termLength <= minSplitLength &&
+            isAlphaNumeric(Arrays.copyOfRange(termBuffer, 0, termLength))) {
+          posIncAttribute.setPositionIncrement(accumPosInc);
+          accumPosInc = 0;
+          first = false;
+
           return true;
         }
 

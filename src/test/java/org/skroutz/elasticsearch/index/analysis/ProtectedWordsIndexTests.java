@@ -7,9 +7,11 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.settings.Settings;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
+import org.apache.lucene.analysis.tokenattributes.KeywordAttribute;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.test.ESIntegTestCase;
@@ -27,6 +29,8 @@ import static org.skroutz.elasticsearch.index.analysis.AnalysisTestsHelper.filte
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+
+import org.junit.Test;
 
 @ThreadLeakScope(Scope.NONE)
 public class ProtectedWordsIndexTests extends ESIntegTestCase {
@@ -47,6 +51,7 @@ public class ProtectedWordsIndexTests extends ESIntegTestCase {
         .build();
   }
 
+  @Test
   public void testAddWordToIndex() throws Exception {
     Settings indexSettings = builder()
         .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
@@ -69,11 +74,28 @@ public class ProtectedWordsIndexTests extends ESIntegTestCase {
 
     String source = "skliros 1tb";
     String[] expected = new String[]{"skliros", "1tb"};
+
     Tokenizer tokenizer = new WhitespaceTokenizer();
+    TokenStream tokenStream = filterFactory.create(tokenizer);
     tokenizer.setReader(new StringReader(source));
-    assertTokenStreamContents(filterFactory.create(tokenizer), expected);
+
+    tokenizer.reset();
+    assertTrue(tokenStream.incrementToken());
+    assertFalse(tokenStream.getAttribute(KeywordAttribute.class).isKeyword());
+    assertTrue(tokenStream.incrementToken());
+    assertTrue(tokenStream.getAttribute(KeywordAttribute.class).isKeyword());
+    tokenizer.close();
+
+    tokenizer = new WhitespaceTokenizer();
+    tokenStream = filterFactory.create(tokenizer);
+    tokenizer.setReader(new StringReader(source));
+
+    assertTokenStreamContents(tokenStream, expected);
+
+    tokenStream.close();
   }
-  
+
+  @Test
   public void testRemoveWordFromIndex() throws Exception {
     Settings indexSettings = builder()
         .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
@@ -95,9 +117,23 @@ public class ProtectedWordsIndexTests extends ESIntegTestCase {
 
     String source = "skliros 1tb";
     String[] expected = new String[]{"skliros", "1tb"};
+
     Tokenizer tokenizer = new WhitespaceTokenizer();
+    TokenStream tokenStream = filterFactory.create(tokenizer);
     tokenizer.setReader(new StringReader(source));
-    assertTokenStreamContents(filterFactory.create(tokenizer), expected);
+
+    tokenizer.reset();
+    assertTrue(tokenStream.incrementToken());
+    assertFalse(tokenStream.getAttribute(KeywordAttribute.class).isKeyword());
+    assertTrue(tokenStream.incrementToken());
+    assertTrue(tokenStream.getAttribute(KeywordAttribute.class).isKeyword());
+    tokenizer.close();
+
+    tokenizer = new WhitespaceTokenizer();
+    tokenStream = filterFactory.create(tokenizer);
+    tokenizer.setReader(new StringReader(source));
+
+    assertTokenStreamContents(tokenStream, expected);
 
     client().delete(new DeleteRequest().
             setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).
@@ -110,9 +146,26 @@ public class ProtectedWordsIndexTests extends ESIntegTestCase {
     assertTrue(protectedWords.isEmpty());
 
     expected = new String[]{"skliros", "1", "tb"};
+
     tokenizer = new WhitespaceTokenizer();
+    tokenStream = filterFactory.create(tokenizer);
     tokenizer.setReader(new StringReader(source));
 
-    assertTokenStreamContents(filterFactory.create(tokenizer), expected);
+    tokenizer.reset();
+    assertTrue(tokenStream.incrementToken());
+    assertFalse(tokenStream.getAttribute(KeywordAttribute.class).isKeyword());
+    assertTrue(tokenStream.incrementToken());
+    assertFalse(tokenStream.getAttribute(KeywordAttribute.class).isKeyword());
+    assertTrue(tokenStream.incrementToken());
+    assertFalse(tokenStream.getAttribute(KeywordAttribute.class).isKeyword());
+    tokenizer.close();
+
+    tokenizer = new WhitespaceTokenizer();
+    tokenStream = filterFactory.create(tokenizer);
+    tokenizer.setReader(new StringReader(source));
+
+    assertTokenStreamContents(tokenStream, expected);
+
+    tokenStream.close();
   }
 }
