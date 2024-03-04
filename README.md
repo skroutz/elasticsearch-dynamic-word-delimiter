@@ -25,6 +25,7 @@ Versions
 
 Dynamic Word Delimiter Plugin | ElasticSearch | Branch |
 ------------------------------|---------------|--------|
+7.8.0.1                       | 7.8.0         | 7.8.0  |
 7.7.0.2                       | 7.7.0         | 7.7.0  |
 7.7.0.1                       | 7.7.0         | 7.7.0  |
 5.4.2.2                       | 5.4.2         | 5.4.2  |
@@ -241,8 +242,6 @@ before the `lowercase` filter.
 ## Authors
 
 * [Bill Kolokithas](https://github.com/freestyl3r)
-* [Peter Markou](https://github.com/m-Peter)
-* [Spyridon Pagkalos](https://github.com/enderian)
 * [Panagiotis Theofilopoulos](https://github.com/ptheof)
 
 ## License

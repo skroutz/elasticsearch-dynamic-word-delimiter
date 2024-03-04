@@ -19,7 +19,7 @@
 package org.skroutz.elasticsearch.index.analysis;
 
 import org.elasticsearch.Version;
-import org.elasticsearch.cluster.metadata.IndexMetaData;
+import org.elasticsearch.cluster.metadata.IndexMetadata;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
@@ -39,7 +39,7 @@ public class WordDelimiterTokenFilterFactoryTests extends ESTokenStreamTestCase 
 
   public void testDefault() throws IOException {
     Settings indexSettings = Settings.builder()
-        .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
+        .put(IndexMetadata.SETTING_VERSION_CREATED, Version.CURRENT)
         .put("index.analysis.filter.my_word_delimiter.type", TYPE_NAME)
         .build();
     TokenFilterFactory filterFactory = filterFactory(indexSettings, FILTER_NAME);
@@ -71,7 +71,7 @@ public class WordDelimiterTokenFilterFactoryTests extends ESTokenStreamTestCase 
 
   public void testCatenateNumbers() throws IOException {
     Settings indexSettings = Settings.builder()
-        .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
+        .put(IndexMetadata.SETTING_VERSION_CREATED, Version.CURRENT)
         .put(Environment.PATH_HOME_SETTING.getKey(), createTempDir().toString())
         .put("index.analysis.filter.my_word_delimiter.type", TYPE_NAME)
         .put("index.analysis.filter.my_word_delimiter.generate_number_parts", "false")
@@ -88,7 +88,7 @@ public class WordDelimiterTokenFilterFactoryTests extends ESTokenStreamTestCase 
 
   public void testCatenateAll() throws IOException {
     Settings indexSettings = Settings.builder()
-        .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
+        .put(IndexMetadata.SETTING_VERSION_CREATED, Version.CURRENT)
         .put(Environment.PATH_HOME_SETTING.getKey(), createTempDir().toString())
         .put("index.analysis.filter.my_word_delimiter.type", TYPE_NAME)
         .put("index.analysis.filter.my_word_delimiter.generate_word_parts", "false")
@@ -106,7 +106,7 @@ public class WordDelimiterTokenFilterFactoryTests extends ESTokenStreamTestCase 
 
   public void testSplitOnCaseChange() throws IOException {
     Settings indexSettings = Settings.builder()
-        .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
+        .put(IndexMetadata.SETTING_VERSION_CREATED, Version.CURRENT)
         .put(Environment.PATH_HOME_SETTING.getKey(), createTempDir().toString())
         .put("index.analysis.filter.my_word_delimiter.type", TYPE_NAME)
         .put("index.analysis.filter.my_word_delimiter.split_on_case_change", "false")
@@ -122,7 +122,7 @@ public class WordDelimiterTokenFilterFactoryTests extends ESTokenStreamTestCase 
 
   public void testPreserveOriginal() throws IOException {
     Settings indexSettings = Settings.builder()
-        .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
+        .put(IndexMetadata.SETTING_VERSION_CREATED, Version.CURRENT)
         .put(Environment.PATH_HOME_SETTING.getKey(), createTempDir().toString())
         .put("index.analysis.filter.my_word_delimiter.type", TYPE_NAME)
         .put("index.analysis.filter.my_word_delimiter.preserve_original", "true")
@@ -139,7 +139,7 @@ public class WordDelimiterTokenFilterFactoryTests extends ESTokenStreamTestCase 
 
   public void testStemEnglishPossessive() throws IOException {
     Settings indexSettings = Settings.builder()
-        .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
+        .put(IndexMetadata.SETTING_VERSION_CREATED, Version.CURRENT)
         .put(Environment.PATH_HOME_SETTING.getKey(), createTempDir().toString())
         .put("index.analysis.filter.my_word_delimiter.type", TYPE_NAME)
         .put("index.analysis.filter.my_word_delimiter.stem_english_possessive", "false")
@@ -157,7 +157,7 @@ public class WordDelimiterTokenFilterFactoryTests extends ESTokenStreamTestCase 
   /** Correct offset order when doing both parts and concatenation: PowerShot is a synonym of Power */
   public void testPartsAndCatenate() throws IOException {
     Settings indexSettings = Settings.builder()
-        .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
+        .put(IndexMetadata.SETTING_VERSION_CREATED, Version.CURRENT)
         .put(Environment.PATH_HOME_SETTING.getKey(), createTempDir().toString())
         .put("index.analysis.filter.my_word_delimiter.type", TYPE_NAME)
         .put("index.analysis.filter.my_word_delimiter.catenate_words", "true")
@@ -175,7 +175,7 @@ public class WordDelimiterTokenFilterFactoryTests extends ESTokenStreamTestCase 
   // Test that it doesn't split a 3-chars (or less) string
   public void testTwoChars() throws IOException {
     Settings indexSettings = Settings.builder()
-            .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
+            .put(IndexMetadata.SETTING_VERSION_CREATED, Version.CURRENT)
             .put(Environment.PATH_HOME_SETTING.getKey(), createTempDir().toString())
             .put("index.analysis.filter.my_word_delimiter.type", TYPE_NAME)
             .put("index.analysis.filter.my_word_delimiter.split_on_numerics", true)
