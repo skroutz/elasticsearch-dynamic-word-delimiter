@@ -3,7 +3,7 @@ package org.skroutz.elasticsearch.index.analysis;
 import org.elasticsearch.test.ESIntegTestCase;
 import org.hamcrest.MatcherAssert;
 import org.elasticsearch.Version;
-import org.elasticsearch.cluster.metadata.IndexMetaData;
+import org.elasticsearch.cluster.metadata.IndexMetadata;
 import org.elasticsearch.common.settings.Settings;
 import static org.elasticsearch.common.settings.Settings.builder;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
@@ -20,7 +20,7 @@ public class SimpleWordDelimiterTokenFilterTests extends ESIntegTestCase {
   @Test
   public void testWordDelimiterTokenFilter() throws IOException {
     Settings indexSettings = builder()
-        .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
+        .put(IndexMetadata.SETTING_VERSION_CREATED, Version.CURRENT)
         .put("index.analysis.filter.my_word_delimiter.type", "dynamic_word_delimiter")
         .put("path.home", "/")
         .build();
