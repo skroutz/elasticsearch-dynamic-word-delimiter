@@ -19,23 +19,21 @@
 
 package org.skroutz.elasticsearch.index.analysis;
 
-import org.elasticsearch.index.Index;
-import org.elasticsearch.index.analysis.TokenFilterFactory;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.plugin.WordDelimiterPlugin;
-
-import static org.elasticsearch.test.ESTestCase.TestAnalysis;
-
 import java.io.IOException;
 
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.Index;
+import org.elasticsearch.index.analysis.TokenFilterFactory;
+import org.elasticsearch.plugin.WordDelimiterPlugin;
+import org.elasticsearch.test.ESTestCase;
 import static org.elasticsearch.test.ESTestCase.createTestAnalysis;
 
 public class AnalysisTestsHelper {
 
   public static TokenFilterFactory filterFactory(Settings indexSettings, String filterName) throws IOException {
 
-      TestAnalysis analysis = createTestAnalysis(new Index("test", "_na_"),
-              indexSettings, new WordDelimiterPlugin());
+      ESTestCase.TestAnalysis analysis = createTestAnalysis(new Index("test", "_na_"),
+              indexSettings, new WordDelimiterPlugin(Settings.EMPTY));
 
       return analysis.tokenFilter.get(filterName);
   }

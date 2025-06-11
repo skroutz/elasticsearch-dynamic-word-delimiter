@@ -18,18 +18,18 @@
  */
 package org.skroutz.elasticsearch.index.analysis;
 
+import java.io.IOException;
+import java.io.StringReader;
+
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.core.WhitespaceTokenizer;
+import static org.apache.lucene.tests.analysis.BaseTokenStreamTestCase.assertTokenStreamContents;
 import org.elasticsearch.Version;
 import org.elasticsearch.cluster.metadata.IndexMetadata;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
-import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.elasticsearch.test.ESTokenStreamTestCase;
-
-import java.io.IOException;
-import java.io.StringReader;
-
 import static org.skroutz.elasticsearch.index.analysis.AnalysisTestsHelper.filterFactory;
 
 public class WordDelimiterTokenFilterFactoryTests extends ESTokenStreamTestCase {

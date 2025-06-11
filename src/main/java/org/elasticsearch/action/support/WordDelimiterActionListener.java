@@ -1,15 +1,15 @@
 package org.elasticsearch.action.support;
 
-import org.elasticsearch.common.logging.Loggers;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.action.ActionListener;
-import org.elasticsearch.action.search.SearchResponse;
-import org.apache.logging.log4j.Logger;
-
 import java.util.HashSet;
 import java.util.Set;
 
-public class WordDelimiterActionListener implements ActionListener<SearchResponse> {
+import org.apache.logging.log4j.Logger;
+import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.common.logging.Loggers;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+public class WordDelimiterActionListener implements ActionListener<JsonNode> {
 
   private static WordDelimiterActionListener instance = null;
   private static final Logger logger = Loggers.getLogger(
@@ -20,24 +20,34 @@ public class WordDelimiterActionListener implements ActionListener<SearchRespons
   private Set<String> protectedWords;
 
   protected WordDelimiterActionListener() {
-    protectedWords = new HashSet<String>();
+    protectedWords = new HashSet<>();
   }
 
-  public void onResponse(SearchResponse response) {
-    SearchHit[] hits = response.getHits().getHits();
-    Set<String> localProtectedWords = new HashSet<String>();
-
-    String word;
-    for (SearchHit hit : hits) {
-      word = hit.getSourceAsMap().get("word").toString();
-      localProtectedWords.add(word);
+  private static HashSet<String> parseFromJsonNode(JsonNode response) {
+    HashSet<String> protectedWords = new HashSet<>();
+    if (response != null && response.has("hits") && response.path("hits").has("hits")) {
+      for (JsonNode hit : response.path("hits").path("hits")) {
+        JsonNode source = hit.path("_source");
+        if (source != null && source.has("word")) {
+          String word = source.path("word").asText();
+          logger.error("Found protected word: " + word);
+          protectedWords.add(word);
+        }
+      }
     }
+    return protectedWords;
+  }
 
-    protectedWords = localProtectedWords;
+  @Override
+  public void onResponse(JsonNode response) {
+    logger.error("Updating protected words in memory");
+
+    protectedWords = parseFromJsonNode(response);
   }
 
   @Override
   public void onFailure(Exception e) {
+    logger.error("`onFailure` called");
     logger.error(e.getMessage());
   }
 
