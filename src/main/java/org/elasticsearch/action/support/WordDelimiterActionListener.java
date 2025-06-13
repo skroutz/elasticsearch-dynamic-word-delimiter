@@ -30,7 +30,7 @@ public class WordDelimiterActionListener implements ActionListener<JsonNode> {
         JsonNode source = hit.path("_source");
         if (source != null && source.has("word")) {
           String word = source.path("word").asText();
-          logger.error("Found protected word: " + word);
+          logger.debug("Found protected word: " + word);
           protectedWords.add(word);
         }
       }
@@ -40,15 +40,14 @@ public class WordDelimiterActionListener implements ActionListener<JsonNode> {
 
   @Override
   public void onResponse(JsonNode response) {
-    logger.error("Updating protected words in memory");
+    logger.debug("Updating protected words in memory");
 
     protectedWords = parseFromJsonNode(response);
   }
 
   @Override
   public void onFailure(Exception e) {
-    logger.error("`onFailure` called");
-    logger.error(e.getMessage());
+    logger.warn("Failed to fetch protected words: ", e.getMessage());
   }
 
   public Set<String> getProtectedWords() {

@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.apache.logging.log4j.Logger;
-import org.elasticsearch.common.logging.Loggers;
 import org.elasticsearch.common.settings.Setting;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
@@ -21,11 +19,6 @@ import org.skroutz.elasticsearch.index.analysis.WordDelimiterTokenFilterFactory;
 
 public class WordDelimiterPlugin extends Plugin implements AnalysisPlugin {
 
-  private static final Logger logger = Loggers.getLogger(
-      WordDelimiterPlugin.class,
-      "DynamicWordDelimiter", "Plugin"
-  );
-
   private final Settings settings;
 
   public WordDelimiterPlugin(Settings settings) {
@@ -34,7 +27,6 @@ public class WordDelimiterPlugin extends Plugin implements AnalysisPlugin {
 
   @Override
   public Map<String, AnalysisModule.AnalysisProvider<TokenFilterFactory>> getTokenFilters() {
-    logger.error("Reached getTokenFilters");
     return Collections.singletonMap("dynamic_word_delimiter",
             WordDelimiterTokenFilterFactory::new);
   }

@@ -57,7 +57,7 @@ public class WordDelimiterRunnable extends AbstractRunnable {
 
   @Override
   public void onFailure(Exception t) {
-    logger.error(t.getMessage());
+    logger.warn(t.getMessage());
   }
 
   private void getAllProtectedWords(WordDelimiterActionListener listener) throws IOException {
@@ -76,14 +76,14 @@ public class WordDelimiterRunnable extends AbstractRunnable {
           }
         });
     } else {
-      logger.error("Index [{}] not found", index);
+      logger.warn("Index [{}] not found", index);
     }
   }
 
   protected void doRun() {
     running = true;
 
-    logger.error("New thread spawned");
+    logger.debug("New thread spawned");
 
     WordDelimiterActionListener listener = WordDelimiterActionListener.getInstance();
     Boolean waitAfterIOError = false;
@@ -97,11 +97,11 @@ public class WordDelimiterRunnable extends AbstractRunnable {
         }
         getAllProtectedWords(listener);
 
-        logger.error("Cache updater thread is suspended");
+        logger.debug("Cache updater thread is suspended");
         Thread.sleep(interval);
-        logger.error("Cache updater thread is resumed");
+        logger.debug("Cache updater thread is resumed");
       } catch (InterruptedException e) {
-        logger.error("Interrupted exception: breaking");
+        logger.warn("Interrupted exception: breaking");
         Thread.currentThread().interrupt();
         break;
       } catch (IllegalStateException e) {

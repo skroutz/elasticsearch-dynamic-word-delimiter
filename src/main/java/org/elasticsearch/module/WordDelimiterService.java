@@ -15,11 +15,11 @@ public class WordDelimiterService extends AbstractLifecycleComponent {
   private final WordDelimiterRunnable runnable;
 
   public WordDelimiterService(Settings settings) {
-    logger.error("Service started");
+    logger.debug("Service started");
     runnable = new WordDelimiterRunnable(settings);
-    logger.error("Created runnable");
+    logger.debug("Created runnable");
     syncWordsThread = new Thread(runnable);
-    logger.error("Spawned thread");
+    logger.debug("Spawned thread");
   }
 
   @Override

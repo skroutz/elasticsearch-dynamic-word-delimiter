@@ -71,7 +71,7 @@ public class ProtectedWordsIndexTests extends ESSingleNodeTestCase {
       try {
         this.transport.close();
       } catch (IOException e) {
-        logger.error("Failed to close Elasticsearch transport", e);
+        logger.warn("Failed to close Elasticsearch transport", e);
       }
     }
   }
