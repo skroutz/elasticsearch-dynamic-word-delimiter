@@ -21,9 +21,16 @@
             <outputDirectory>/</outputDirectory>
             <includes>
                 <include>*.properties</include>
-                <include>*.policy</include>
             </includes>
             <filtered>true</filtered>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/src/main/plugin-metadata/</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>*.yaml</include>
+            </includes>
+            <filtered>false</filtered>
         </fileSet>
     </fileSets>
 </assembly>

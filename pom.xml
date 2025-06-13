@@ -112,11 +112,17 @@
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
-        <filtering>false</filtering>
-        <includes>
-          <include>plugin-descriptor.properties</include>
-          <include>plugin-security.policy</include>
-        </includes>
+				<filtering>false</filtering>
+				<includes>
+					<include>plugin-descriptor.properties</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/plugin-metadata</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>entitlement-policy.yaml</include>
+				</includes>
 			</resource>
 		</resources>
 		<plugins>
