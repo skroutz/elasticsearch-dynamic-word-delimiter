@@ -15,7 +15,7 @@ import org.elasticsearch.core.TimeValue;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 
 public class WordDelimiterRunnable extends AbstractRunnable {
-  public static final TimeValue REFRESH_INTERVAL = TimeValue.timeValueSeconds(5);
+  public static final TimeValue REFRESH_INTERVAL = TimeValue.timeValueMinutes(5);
   public static final TimeValue BACKOFF_TIME = TimeValue.timeValueSeconds(2);
   public static final String INDEX_NAME = "protected_words";
   public static final int RESULTS_SIZE = 10000;
