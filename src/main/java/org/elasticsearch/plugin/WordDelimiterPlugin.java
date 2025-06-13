@@ -1,36 +1,42 @@
 package org.elasticsearch.plugin;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
 import org.elasticsearch.common.settings.Setting;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.indices.analysis.AnalysisModule;
 import org.elasticsearch.module.WordDelimiterRunnable;
-import org.elasticsearch.plugins.AnalysisPlugin;
-import org.elasticsearch.common.component.LifecycleComponent;
 import org.elasticsearch.module.WordDelimiterService;
+import org.elasticsearch.plugins.AnalysisPlugin;
 import org.elasticsearch.plugins.Plugin;
-
-import java.util.*;
-import java.util.function.Function;
-
 import org.skroutz.elasticsearch.index.analysis.WordDelimiterTokenFilterFactory;
 
 public class WordDelimiterPlugin extends Plugin implements AnalysisPlugin {
 
-  private final Collection<Class<? extends LifecycleComponent>> services = new ArrayList<>();
+  private final Settings settings;
 
-  public WordDelimiterPlugin() {
-    services.add(WordDelimiterService.class);
-  }
-
-  @Override
-  public Collection<Class<? extends LifecycleComponent>> getGuiceServiceClasses() {
-    return Collections.singleton(WordDelimiterService.class);
+  public WordDelimiterPlugin(Settings settings) {
+    this.settings = settings;
   }
 
   @Override
   public Map<String, AnalysisModule.AnalysisProvider<TokenFilterFactory>> getTokenFilters() {
     return Collections.singletonMap("dynamic_word_delimiter",
             WordDelimiterTokenFilterFactory::new);
+  }
+
+  @Override
+  public Collection<Object> createComponents(PluginServices services) {
+    WordDelimiterService wordDelimiterService =
+        new WordDelimiterService(this.settings);
+
+    return List.of(wordDelimiterService);
   }
 
   @Override
