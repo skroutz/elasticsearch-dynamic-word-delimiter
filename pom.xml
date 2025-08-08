@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>gr.skroutz</groupId>
 	<artifactId>elasticsearch-dynamic-word-delimiter</artifactId>
-	<version>8.18.4.1-SNAPSHOT</version>
+	<version>8.19.1.1-SNAPSHOT</version>
 	<description>Dynamic word delimiter token filter for ElasticSearch</description>
 	<inceptionYear>2015</inceptionYear>
 
@@ -19,7 +19,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<elasticsearch.version>8.18.4</elasticsearch.version>
+		<elasticsearch.version>8.19.1</elasticsearch.version>
+		<elasticsearch.libs.version>8.19.0</elasticsearch.libs.version>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
 	</properties>
@@ -80,7 +81,7 @@
 		<dependency>
 			<groupId>co.elastic.clients</groupId>
 			<artifactId>elasticsearch-java</artifactId>
-			<version>${elasticsearch.version}</version>
+			<version>${elasticsearch.libs.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
