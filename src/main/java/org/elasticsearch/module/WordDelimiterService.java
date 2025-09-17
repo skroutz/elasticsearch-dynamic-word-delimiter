@@ -40,5 +40,11 @@ public class WordDelimiterService extends AbstractLifecycleComponent {
   }
 
   @Override
-  protected void doClose() throws ElasticsearchException {}
+  protected void doClose() throws ElasticsearchException {
+    try {
+      runnable.close();
+    } catch (Exception e) {
+      logger.warn("Failed to close WordDelimiterRunnable resources", e);
+    }
+  }
 }

@@ -27,6 +27,7 @@ public class WordDelimiterRunnable extends AbstractRunnable {
   private final int httpPort = 9200;
   private static final Logger logger = Loggers.getLogger(WordDelimiterRunnable.class, "WordDelimiter", "Runnable");
 
+  private final RestClient restClient;
   private final CustomElasticsearchClient customEsClient;
   private final CustomElasticsearchAsyncClient customEsAsyncClient;
 
@@ -46,13 +47,19 @@ public class WordDelimiterRunnable extends AbstractRunnable {
 
     HttpHost httpHost = new HttpHost("localhost", httpPort, "http");
     JacksonJsonpMapper jsonpMapper = new JacksonJsonpMapper();
-    RestClient restClient = RestClient.builder(httpHost).build();
+    this.restClient = RestClient.builder(httpHost).build();
     customEsClient = new CustomElasticsearchClient(restClient, jsonpMapper);
     customEsAsyncClient = new CustomElasticsearchAsyncClient(restClient, jsonpMapper);
   }
 
   public void stopRunning() {
     running = false;
+  }
+
+  public void close() throws IOException {
+    if (restClient != null) {
+      restClient.close();
+    }
   }
 
   @Override

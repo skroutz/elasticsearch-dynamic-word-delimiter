@@ -15,6 +15,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 
 public class CustomElasticsearchAsyncClient {
+    private static final int SEARCH_SIZE = 10000;
+
     private final RestClient restClient;
     private final JacksonJsonpMapper jsonpMapper;
 
@@ -50,7 +52,7 @@ public class CustomElasticsearchAsyncClient {
     public CompletableFuture<JsonNode> searchMatchAll(String indexName) {
         CompletableFuture<JsonNode> future = new CompletableFuture<>();
         Request request = new Request("GET", "/" + indexName + "/_search");
-        request.setJsonEntity("{\"query\": {\"match_all\": {}}}");
+        request.setJsonEntity("{\"query\": {\"match_all\": {}}, \"size\": " + SEARCH_SIZE + "}");
 
         restClient.performRequestAsync(request, new ResponseListener() {
             @Override
