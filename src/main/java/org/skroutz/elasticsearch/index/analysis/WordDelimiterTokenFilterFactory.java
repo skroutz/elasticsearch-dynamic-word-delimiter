@@ -53,7 +53,7 @@ public class WordDelimiterTokenFilterFactory extends AbstractTokenFilterFactory 
     private final int minSplitLength;
 
     public WordDelimiterTokenFilterFactory(IndexSettings indexSettings, Environment env, String name, Settings settings) {
-        super(name, settings);
+        super(name);
 
         // Sample Format for the type table:
         // $ => DIGIT

@@ -11,7 +11,7 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.elasticsearch.Version;
+import org.elasticsearch.index.IndexVersion;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
@@ -92,7 +92,7 @@ public class ProtectedWordsIndexTests extends ESSingleNodeTestCase {
   @Test
   public void testAddWordToIndex() throws Exception {
     Settings indexSettings = builder()
-        .put(IndexMetadata.SETTING_VERSION_CREATED, Version.CURRENT)
+        .put(IndexMetadata.SETTING_VERSION_CREATED, IndexVersion.current())
         .put("index.analysis.filter.my_word_delimiter.type", "dynamic_word_delimiter")
         .build();
     TokenFilterFactory filterFactory = filterFactory(indexSettings, FILTER_NAME);
@@ -125,7 +125,7 @@ public class ProtectedWordsIndexTests extends ESSingleNodeTestCase {
 
   public void testRemoveWordFromIndex() throws Exception {
     Settings indexSettings = builder()
-        .put(IndexMetadata.SETTING_VERSION_CREATED, Version.CURRENT)
+        .put(IndexMetadata.SETTING_VERSION_CREATED, IndexVersion.current())
         .put("index.analysis.filter.my_word_delimiter.type", "dynamic_word_delimiter")
         .build();
     TokenFilterFactory filterFactory = filterFactory(indexSettings, FILTER_NAME);
@@ -189,7 +189,7 @@ public class ProtectedWordsIndexTests extends ESSingleNodeTestCase {
   @Test
   public void testRegressionMoreThan10ProtectedWords() throws Exception {
     Settings indexSettings = builder()
-        .put(IndexMetadata.SETTING_VERSION_CREATED, Version.CURRENT)
+        .put(IndexMetadata.SETTING_VERSION_CREATED, IndexVersion.current())
         .put("index.analysis.filter.my_word_delimiter.type", "dynamic_word_delimiter")
         .build();
     TokenFilterFactory filterFactory = filterFactory(indexSettings, FILTER_NAME);
