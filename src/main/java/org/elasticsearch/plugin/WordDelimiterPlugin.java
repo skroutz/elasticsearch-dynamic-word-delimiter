@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.elasticsearch.common.settings.SecureSetting;
+import org.elasticsearch.common.settings.SecureString;
 import org.elasticsearch.common.settings.Setting;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
@@ -21,6 +23,11 @@ public class WordDelimiterPlugin extends Plugin implements AnalysisPlugin {
 
   private final Settings settings;
 
+  public static final Setting<SecureString> USERNAME = SecureSetting
+      .secureString("plugin.dynamic_word_delimiter.username", null);
+  public static final Setting<SecureString> PASSWORD = SecureSetting
+      .secureString("plugin.dynamic_word_delimiter.password", null);
+
   public WordDelimiterPlugin(Settings settings) {
     this.settings = settings;
   }
@@ -28,13 +35,12 @@ public class WordDelimiterPlugin extends Plugin implements AnalysisPlugin {
   @Override
   public Map<String, AnalysisModule.AnalysisProvider<TokenFilterFactory>> getTokenFilters() {
     return Collections.singletonMap("dynamic_word_delimiter",
-            WordDelimiterTokenFilterFactory::new);
+        WordDelimiterTokenFilterFactory::new);
   }
 
   @Override
   public Collection<Object> createComponents(PluginServices services) {
-    WordDelimiterService wordDelimiterService =
-        new WordDelimiterService(this.settings);
+    WordDelimiterService wordDelimiterService = new WordDelimiterService(this.settings);
 
     return List.of(wordDelimiterService);
   }
@@ -42,16 +48,21 @@ public class WordDelimiterPlugin extends Plugin implements AnalysisPlugin {
   @Override
   public List<Setting<?>> getSettings() {
     return Arrays.asList(
-      new Setting<>(
-        "plugin.dynamic_word_delimiter.protected_words_index",
-        WordDelimiterRunnable.INDEX_NAME,
-        Function.identity(),
-        Setting.Property.NodeScope),
-      Setting.timeSetting(
-        "plugin.dynamic_word_delimiter.refresh_interval",
-        WordDelimiterRunnable.REFRESH_INTERVAL,
-        Setting.Property.NodeScope)
-    );
+        new Setting<>(
+            "plugin.dynamic_word_delimiter.protected_words_index",
+            WordDelimiterRunnable.INDEX_NAME,
+            Function.identity(),
+            Setting.Property.NodeScope),
+        Setting.simpleString(
+            "plugin.dynamic_word_delimiter.http_scheme",
+            "http",
+            Setting.Property.NodeScope),
+        Setting.timeSetting(
+            "plugin.dynamic_word_delimiter.refresh_interval",
+            WordDelimiterRunnable.REFRESH_INTERVAL,
+            Setting.Property.NodeScope),
+        USERNAME,
+        PASSWORD);
   }
 
 }
