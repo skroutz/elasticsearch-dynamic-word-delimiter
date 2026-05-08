@@ -1,15 +1,16 @@
 package org.elasticsearch.action.support;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.logging.Loggers;
+import org.elasticsearch.search.SearchHit;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-public class WordDelimiterActionListener implements ActionListener<JsonNode> {
+public class WordDelimiterActionListener implements ActionListener<SearchResponse> {
 
   private static WordDelimiterActionListener instance = null;
   private static final Logger logger = Loggers.getLogger(
@@ -23,26 +24,27 @@ public class WordDelimiterActionListener implements ActionListener<JsonNode> {
     protectedWords = new HashSet<>();
   }
 
-  private static HashSet<String> parseFromJsonNode(JsonNode response) {
+  private static HashSet<String> parseFromSearchResponse(SearchResponse response) {
     HashSet<String> protectedWords = new HashSet<>();
-    if (response != null && response.has("hits") && response.path("hits").has("hits")) {
-      for (JsonNode hit : response.path("hits").path("hits")) {
-        JsonNode source = hit.path("_source");
-        if (source != null && source.has("word")) {
-          String word = source.path("word").asText();
-          logger.debug("Found protected word: " + word);
-          protectedWords.add(word);
-        }
+    if (response == null || response.getHits() == null) {
+      return protectedWords;
+    }
+    for (SearchHit hit : response.getHits().getHits()) {
+      Map<String, Object> source = hit.getSourceAsMap();
+      if (source != null && source.get("word") != null) {
+        String word = source.get("word").toString();
+        logger.debug("Found protected word: " + word);
+        protectedWords.add(word);
       }
     }
     return protectedWords;
   }
 
   @Override
-  public void onResponse(JsonNode response) {
+  public void onResponse(SearchResponse response) {
     logger.debug("Updating protected words in memory");
 
-    protectedWords = parseFromJsonNode(response);
+    protectedWords = parseFromSearchResponse(response);
   }
 
   @Override
