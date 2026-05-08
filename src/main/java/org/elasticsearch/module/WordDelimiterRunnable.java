@@ -1,22 +1,25 @@
 package org.elasticsearch.module;
 
-import java.io.IOException;
-import java.net.ConnectException;
-
-import org.apache.http.HttpHost;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.WordDelimiterActionListener;
-import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.internal.Client;
+import org.elasticsearch.cluster.block.ClusterBlockException;
+import org.elasticsearch.cluster.service.ClusterService;
+import org.elasticsearch.common.component.Lifecycle;
 import org.elasticsearch.common.logging.Loggers;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.util.concurrent.AbstractRunnable;
 import org.elasticsearch.core.TimeValue;
-
-import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import org.elasticsearch.gateway.GatewayService;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 public class WordDelimiterRunnable extends AbstractRunnable {
   public static final TimeValue REFRESH_INTERVAL = TimeValue.timeValueMinutes(5);
   public static final TimeValue BACKOFF_TIME = TimeValue.timeValueSeconds(2);
+  public static final long NOT_READY_POLL_MS = 200L;
   public static final String INDEX_NAME = "protected_words";
   public static final int RESULTS_SIZE = 10000;
 
@@ -24,14 +27,12 @@ public class WordDelimiterRunnable extends AbstractRunnable {
   private final String index;
   private final long interval;
   private final long backoffTime;
-  private final int httpPort = 9200;
   private static final Logger logger = Loggers.getLogger(WordDelimiterRunnable.class, "WordDelimiter", "Runnable");
 
-  private final RestClient restClient;
-  private final CustomElasticsearchClient customEsClient;
-  private final CustomElasticsearchAsyncClient customEsAsyncClient;
+  private final Client client;
+  private final ClusterService clusterService;
 
-  public WordDelimiterRunnable(Settings settings) {
+  public WordDelimiterRunnable(Settings settings, Client client, ClusterService clusterService) {
     this.index = settings.get(
       "plugin.dynamic_word_delimiter.protected_words_index",
       INDEX_NAME
@@ -44,22 +45,12 @@ public class WordDelimiterRunnable extends AbstractRunnable {
       "plugin.dynamic_word_delimiter.refresh_interval",
       BACKOFF_TIME
     ).getMillis();
-
-    HttpHost httpHost = new HttpHost("localhost", httpPort, "http");
-    JacksonJsonpMapper jsonpMapper = new JacksonJsonpMapper();
-    this.restClient = RestClient.builder(httpHost).build();
-    customEsClient = new CustomElasticsearchClient(restClient, jsonpMapper);
-    customEsAsyncClient = new CustomElasticsearchAsyncClient(restClient, jsonpMapper);
+    this.client = client;
+    this.clusterService = clusterService;
   }
 
   public void stopRunning() {
     running = false;
-  }
-
-  public void close() throws IOException {
-    if (restClient != null) {
-      restClient.close();
-    }
   }
 
   @Override
@@ -67,23 +58,41 @@ public class WordDelimiterRunnable extends AbstractRunnable {
     logger.warn(t.getMessage());
   }
 
-  private void getAllProtectedWords(WordDelimiterActionListener listener) throws IOException {
-    if (customEsClient.indicesExists(index)) {
-      customEsAsyncClient.searchMatchAll(index)
-        .whenComplete((response, exception) -> {
-          if (exception == null) {
-            listener.onResponse(response);
-          } else {
-            if (exception.getCause() instanceof ConnectException) {
-              logger.error("Error connecting to Elasticsearch: " + exception.getMessage());
-            } else {
-              logger.error("Error fetching protected words: " + exception.getMessage());
-            }
-            listener.onFailure((Exception)exception);
-          }
-        });
-    } else {
+  private boolean clusterReady() {
+    if (clusterService.lifecycleState() != Lifecycle.State.STARTED) {
+      return false;
+    }
+    try {
+      return !clusterService.state()
+        .blocks()
+        .hasGlobalBlock(GatewayService.STATE_NOT_RECOVERED_BLOCK);
+    } catch (AssertionError e) {
+      // ClusterApplierService asserts that the initial state has been set;
+      // before that we are simply not ready.
+      return false;
+    }
+  }
+
+  private void getAllProtectedWords(WordDelimiterActionListener listener) {
+    boolean hasProtectedWordsIndex = clusterService.state().metadata().hasIndex(index);
+    boolean hasProtectedWordsAlias = clusterService.state().metadata().hasAlias(index);
+    boolean hasProtectedWords = hasProtectedWordsIndex || hasProtectedWordsAlias;
+
+    if (!hasProtectedWords) {
       logger.warn("Index [{}] not found", index);
+      return;
+    }
+
+    SearchRequest request = new SearchRequest(index)
+      .source(new SearchSourceBuilder()
+        .query(QueryBuilders.matchAllQuery())
+        .size(RESULTS_SIZE));
+
+    SearchResponse response = client.search(request).actionGet();
+    try {
+      listener.onResponse(response);
+    } finally {
+      response.decRef();
     }
   }
 
@@ -93,15 +102,21 @@ public class WordDelimiterRunnable extends AbstractRunnable {
     logger.debug("New thread spawned");
 
     WordDelimiterActionListener listener = WordDelimiterActionListener.getInstance();
-    Boolean waitAfterIOError = false;
+    boolean waitAfterError = false;
 
-    while(running && !Thread.currentThread().isInterrupted()) {
+    while (running && !Thread.currentThread().isInterrupted()) {
       try {
-
-        if (waitAfterIOError) {
+        if (waitAfterError) {
           Thread.sleep(backoffTime);
-          waitAfterIOError = false;
+          waitAfterError = false;
         }
+
+        if (!clusterReady()) {
+          logger.debug("Cluster state not yet recovered, deferring refresh");
+          Thread.sleep(NOT_READY_POLL_MS);
+          continue;
+        }
+
         getAllProtectedWords(listener);
 
         logger.debug("Cache updater thread is suspended");
@@ -111,15 +126,12 @@ public class WordDelimiterRunnable extends AbstractRunnable {
         logger.warn("Interrupted exception: breaking");
         Thread.currentThread().interrupt();
         break;
-      } catch (IllegalStateException e) {
-        logger.error("Illegal state exception: supressing: " + e.getMessage());
-      } catch (ConnectException e) {
-        logger.error("Connect exception: supressing: " + e.getMessage());
-      } catch (IOException e) {
-        logger.error("IO exception: supressing: " + e.getMessage());
-        waitAfterIOError = true;
+      } catch (ClusterBlockException e) {
+        logger.warn("Cluster blocked, retrying after backoff: " + e.getMessage());
+        waitAfterError = true;
       } catch (Exception e) {
-        logger.error("Exception: supressing: " + e.getMessage());
+        logger.error("Exception fetching protected words: " + e.getMessage());
+        waitAfterError = true;
       }
     }
   }
