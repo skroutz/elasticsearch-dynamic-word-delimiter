@@ -33,8 +33,11 @@ public class WordDelimiterPlugin extends Plugin implements AnalysisPlugin {
 
   @Override
   public Collection<Object> createComponents(PluginServices services) {
-    WordDelimiterService wordDelimiterService =
-        new WordDelimiterService(this.settings);
+    WordDelimiterService wordDelimiterService = new WordDelimiterService(
+        this.settings,
+        services.client(),
+        services.clusterService()
+    );
 
     return List.of(wordDelimiterService);
   }
