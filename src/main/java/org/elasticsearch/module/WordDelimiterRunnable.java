@@ -34,17 +34,14 @@ public class WordDelimiterRunnable extends AbstractRunnable {
 
   public WordDelimiterRunnable(Settings settings, Client client, ClusterService clusterService) {
     this.index = settings.get(
-      "plugin.dynamic_word_delimiter.protected_words_index",
-      INDEX_NAME
-    );
+        "plugin.dynamic_word_delimiter.protected_words_index",
+        INDEX_NAME);
     this.interval = settings.getAsTime(
-      "plugin.dynamic_word_delimiter.refresh_interval",
-      REFRESH_INTERVAL
-    ).getMillis();
+        "plugin.dynamic_word_delimiter.refresh_interval",
+        REFRESH_INTERVAL).getMillis();
     this.backoffTime = settings.getAsTime(
-      "plugin.dynamic_word_delimiter.refresh_interval",
-      BACKOFF_TIME
-    ).getMillis();
+        "plugin.dynamic_word_delimiter.refresh_interval",
+        BACKOFF_TIME).getMillis();
     this.client = client;
     this.clusterService = clusterService;
   }
@@ -64,8 +61,8 @@ public class WordDelimiterRunnable extends AbstractRunnable {
     }
     try {
       return !clusterService.state()
-        .blocks()
-        .hasGlobalBlock(GatewayService.STATE_NOT_RECOVERED_BLOCK);
+          .blocks()
+          .hasGlobalBlock(GatewayService.STATE_NOT_RECOVERED_BLOCK);
     } catch (AssertionError e) {
       // ClusterApplierService asserts that the initial state has been set;
       // before that we are simply not ready.
@@ -74,8 +71,8 @@ public class WordDelimiterRunnable extends AbstractRunnable {
   }
 
   private void getAllProtectedWords(WordDelimiterActionListener listener) {
-    boolean hasProtectedWordsIndex = clusterService.state().metadata().hasIndex(index);
-    boolean hasProtectedWordsAlias = clusterService.state().metadata().hasAlias(index);
+    boolean hasProtectedWordsIndex = clusterService.state().metadata().getProject().hasIndex(index);
+    boolean hasProtectedWordsAlias = clusterService.state().metadata().getProject().hasAlias(index);
     boolean hasProtectedWords = hasProtectedWordsIndex || hasProtectedWordsAlias;
 
     if (!hasProtectedWords) {
@@ -84,9 +81,9 @@ public class WordDelimiterRunnable extends AbstractRunnable {
     }
 
     SearchRequest request = new SearchRequest(index)
-      .source(new SearchSourceBuilder()
-        .query(QueryBuilders.matchAllQuery())
-        .size(RESULTS_SIZE));
+        .source(new SearchSourceBuilder()
+            .query(QueryBuilders.matchAllQuery())
+            .size(RESULTS_SIZE));
 
     SearchResponse response = client.search(request).actionGet();
     try {
